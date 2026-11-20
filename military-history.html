@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<!--
+NOTEPAD MAINTAINER GUIDE
+1. Make a backup. Open the working copy in Notepad; turn on Word Wrap.
+2. Ctrl+F: EDIT BROWSER TITLE, EDIT PAGE HEADER, EDIT COURSE FOOTER,
+   or BEGIN EDITABLE STUDY DATA. Edit only the section you need.
+3. Inside Study Data, settings controls labels and saved progress. Keep deckId
+   for routine edits. Give a new course a different deckId so scores stay separate.
+4. lessons: the left side is the lesson ID; the right side is the displayed name.
+   Every item's lesson must match a lesson ID in this list.
+5. cards: one row per card. q is the prompt; answer is the revealed answer.
+   Keep each card id unique. sourceId links to a multiple-choice question id:
+   for example, card "01" uses sourceId 1 to link to quiz id "1".
+   Both "64a" and "64b" link to quiz id "64". Omit sourceId for a standalone card.
+6. questions: one block per question. Edit q, the option text, and why together.
+   Keep four choices and mark exactly one correct: true; the others use false.
+   Each quiz id must be unique. slide is the source reference; note is optional.
+   Example: change the text in "q", then verify the correct choice still has
+   "correct": true. Update the matching flashcard if the underlying fact changes.
+7. Preserve straight double quotes, braces and brackets. Put commas between
+   entries, never after the last one. Use escaped quotes (\") inside quoted text.
+   Keep entries on one line where shown. Use \n for a line break inside a value.
+   Put comments outside Study Data: comments inside the JSON will break it.
+   In the HTML title/header/footer, type &amp; for an ampersand and &lt; for <.
+8. Save as UTF-8 with the .html extension (Save As > All files, not Text Documents).
+   Open in a desktop browser. Check the edited card, lesson filter and scoring.
+   An orange setup message means the study data needs correction.
+   For a hosted copy, replace the deployed file separately and test on a phone.
+Only edit the sections marked below. The app code follows the study data.
+-->
+
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><!-- EDIT BROWSER TITLE -->
+<title>OCS Military History — Study Companion</title>
+<style>
+:root{--paper:#f6f5ef;--white:#fff;--ink:#222b25;--muted:#647067;--green:#344d3a;--pale:#e9eee5;--line:#d9ded5;--gold:#af863e;--bad:#9e3333}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,select,input{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:9px;background:var(--white);color:var(--ink);padding:10px 16px;font-weight:600}button:hover{border-color:var(--green);background:var(--ocs-hover,#f0f3ed)}button:disabled{cursor:default;opacity:.48}button:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #b18b42;outline-offset:3px}.primary{background:var(--ocs-primary,var(--green));color:white;border-color:var(--green)}.primary:hover{background:var(--ocs-primary-hover,#253d2b);color:white}.subtle{background:transparent}.wrap{max-width:1160px;margin:auto;padding:26px 30px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-bottom:25px;border-bottom:1px solid var(--line)}.eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green)}h1{font-family:Georgia,serif;font-weight:500;font-size:36px;line-height:1.15;letter-spacing:-.7px;margin:7px 0}header p{margin:8px 0 0;color:var(--muted);font-size:14px}.badge{white-space:nowrap;border:1px solid var(--line);padding:7px 12px;border-radius:30px;font-size:12px;color:var(--green);background:var(--white)}.tabs{display:flex;gap:7px;margin:24px 0}.tabs button{background:transparent;border:0;color:var(--muted)}.tabs button[aria-pressed=true]{background:var(--ocs-primary,var(--green));color:white}.layout{display:grid;grid-template-columns:247px minmax(0,1fr);gap:26px}.panel{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:21px}aside h2{font-size:15px;margin:0 0 18px}label{display:block;font-size:12px;font-weight:700;margin:17px 0 6px;color:var(--muted)}select{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:var(--white);color:var(--ink)}.check{display:flex;align-items:center;gap:8px;color:var(--ink);font-size:13px;font-weight:400}.check input{accent-color:var(--green);width:16px;height:16px}aside .primary{width:100%;margin-top:18px}.help{font-size:12px;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat{border-bottom:2px solid var(--line);padding:0 0 12px}.stat strong{display:block;font-size:23px;font-weight:600}.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.study{position:relative;background:var(--white);border:1px solid var(--line);border-radius:15px;overflow:hidden;min-height:380px}.topline{display:flex;justify-content:space-between;align-items:center;padding:17px 24px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}.star{border:0;padding:3px 8px;font-size:20px;background:transparent;color:var(--muted)}.star[aria-pressed=true]{color:var(--ocs-good,#916d26)}.cardbody{padding:30px 32px;min-height:255px}.cardlabel{font-size:11px;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);font-weight:700;margin-bottom:16px}.question{font-family:Georgia,serif;font-size:25px;line-height:1.42;font-weight:500;margin:0 0 24px}.answer{font-size:18px;line-height:1.65;border-top:1px solid var(--line);padding-top:21px}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:23px}.footbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-top:1px solid var(--line);background:var(--ocs-hover,#fafbf8);gap:12px}.counter{font-size:13px;color:var(--muted)}.progress{height:4px;background:var(--pale)}.progress i{display:block;height:100%;background:var(--gold);transition:width .15s}.options{display:grid;gap:10px}.option{text-align:left;font-weight:400;display:flex;align-items:flex-start;gap:13px;padding:14px 15px;line-height:1.45}.letter{width:25px;min-width:25px;border:1px solid var(--line);border-radius:5px;text-align:center;font-size:12px;line-height:24px}.option.correct{border-color:var(--ocs-correct-line,#48774e);background:var(--ocs-correct,#edf5eb);opacity:1}.option.wrong{border-color:var(--ocs-wrong-line,#b15151);background:var(--ocs-wrong,#fff0ed);opacity:1}.option.selected{border-color:var(--green);background:var(--pale);opacity:1}.feedback{margin-top:20px;padding:16px 0 0;border-top:1px solid var(--line)}.feedback strong{display:block;margin-bottom:5px}.good{color:var(--ocs-good,#315e36)}.bad{color:var(--bad)}details{margin-top:17px;color:var(--muted);font-size:12px}summary{cursor:pointer;font-weight:600}details p{line-height:1.6}.below{display:flex;justify-content:space-between;gap:15px;margin-top:14px;font-size:12px;color:var(--muted)}.below button{font-size:12px;padding:5px 10px}footer{border-top:1px solid var(--line);margin-top:30px;padding-top:15px;font-size:12px;color:var(--muted)}footer a{color:var(--green)}.empty{padding:35px}.result{padding:28px 32px}.score{font-family:Georgia,serif;font-size:55px;color:var(--green);line-height:1.2}.reviewitem{padding:18px 0;border-top:1px solid var(--line)}.reviewitem h3{font-size:16px;margin:0 0 8px}.reviewitem p{margin:5px 0;font-size:14px}.pill{display:inline-block;font-size:11px;padding:3px 8px;border-radius:5px;background:var(--pale);color:var(--green)}#storage{font-size:12px;color:var(--muted);margin-top:12px}.noscript{padding:25px;background:var(--ocs-wrong,#fff1da)}dialog{max-width:490px;border:1px solid var(--line);border-radius:14px;padding:28px;color:var(--ink)}dialog::backdrop{background:#14231b70}dialog h2{margin-top:0}dialog p{color:var(--muted)}@media(max-width:760px){.wrap{padding:20px 16px}header{align-items:flex-start}h1{font-size:29px}.badge{display:none}.layout{grid-template-columns:1fr;gap:17px}.panel{padding:16px}aside h2{margin-bottom:8px}.filters{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}aside label{margin-top:8px}.check{margin-top:16px}aside .primary{margin-top:12px}aside .help{margin-bottom:0}.tabs{margin:17px 0;gap:2px}.tabs button{padding:10px 12px;font-size:14px}.question{font-size:22px}.cardbody{padding:24px 21px}.topline,.footbar{padding:13px 17px}.below{flex-wrap:wrap}.result{padding:24px 20px}.stats{margin-top:0}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}@media print{header,.tabs,aside,.below,footer,.footbar,.star,.actions{display:none}.layout{display:block}.study{border:0}.wrap{padding:0}.reviewitem{break-inside:avoid}}
+
+/* OCS branding and theme controls */
+header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+.ocs-insignia { display: block; flex: none; width: clamp(48px, 12vw, 72px); height: auto; border-radius: 12px; }
+.ocs-brand-copy { flex: 1 1 210px; min-width: 0; }
+.ocs-header-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ocs-theme-picker { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--muted); font-size: 13px; font-weight: 650; }
+.ocs-theme-picker[hidden] { display: none; }
+.ocs-theme-picker select { width: auto; min-height: 44px; padding: 6px 9px; font: inherit; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--ink); }
+.ocs-theme-picker select:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+:root[data-ocs-theme="dark"] {
+  color-scheme: dark;
+  --paper: #151b17; --white: #202923; --ink: #edf1ec; --muted: #b5c1b6;
+  --green: #b8d6b9; --pale: #2d3c32; --line: #536359; --gold: #e4bc65;
+  --bad: #ffb2a9; --ocs-hover: #304037; --ocs-primary: #31563c;
+  --ocs-primary-hover: #3b6547; --ocs-correct: #253c2b; --ocs-wrong: #462a29;
+  --ocs-good: #b2dda9; --ocs-correct-line: #83be8d; --ocs-wrong-line: #de948b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-ocs-theme]) {
+  color-scheme: dark;
+  --paper: #151b17; --white: #202923; --ink: #edf1ec; --muted: #b5c1b6;
+  --green: #b8d6b9; --pale: #2d3c32; --line: #536359; --gold: #e4bc65;
+  --bad: #ffb2a9; --ocs-hover: #304037; --ocs-primary: #31563c;
+  --ocs-primary-hover: #3b6547; --ocs-correct: #253c2b; --ocs-wrong: #462a29;
+  --ocs-good: #b2dda9; --ocs-correct-line: #83be8d; --ocs-wrong-line: #de948b;
+}
+}
+</style>
+<script id="ocs-theme-init">
+(() => {
+  const key = 'ocs-study-tools-theme';
+  const root = document.documentElement;
+  let theme = 'system';
+  try { theme = localStorage.getItem(key) || 'system'; } catch (_) {}
+  const apply = (value) => {
+    theme = ['system', 'light', 'dark'].includes(value) ? value : 'system';
+    if (theme === 'system') root.removeAttribute('data-ocs-theme');
+    else root.setAttribute('data-ocs-theme', theme);
+  };
+  apply(theme);
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('ocs-theme');
+    select.value = theme;
+    select.parentElement.hidden = false;
+    select.addEventListener('change', () => {
+      apply(select.value);
+      try { localStorage.setItem(key, theme); } catch (_) {}
+    });
+    window.addEventListener('storage', (event) => {
+      if (event.key === key || event.key === null) {
+        apply(event.newValue);
+        select.value = theme;
+      }
+    });
+  });
+})();
+</script></head><body><div class="wrap">
+<!-- EDIT PAGE HEADER -->
+<header class="ocs-header"><img class="ocs-insignia" width="72" height="72" alt="Officer Candidate School insignia" src="data:image/webp;base64,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"><div class="ocs-brand-copy"><div class="eyebrow">Officer Candidate School · American Military History</div><h1>Know the history.<br>Explain the lesson.</h1><p>Your POI, ready to practice. No account. No subscription.</p></div><div class="ocs-header-tools"><label class="ocs-theme-picker" hidden>Theme
+  <select id="ocs-theme">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</label><span class="badge">OFFLINE STUDY COMPANION</span></div></header>
+<noscript><p class="noscript">Enable JavaScript in your browser to use the flashcards and quizzes. This file needs no internet connection.</p></noscript>
+<nav class="tabs" aria-label="Study mode"><button data-mode="flash" aria-pressed="true">Flashcards</button><button data-mode="practice" aria-pressed="false">Multiple choice</button><button data-mode="test" aria-pressed="false">Practice test</button></nav>
+<div class="layout"><aside class="panel"><h2>Build your session</h2><div class="filters"><div><label for="lesson">Lesson</label><select id="lesson"><option value="all">All lessons</option></select></div><div><label for="pool">Study selection</label><select id="pool"><option value="all">Everything</option><option value="needs">Needs review</option><option value="missed">Missed in quizzes</option><option value="starred">Starred</option></select></div><div><label for="length">Session length</label><select id="length"><option value="all">All available</option><option value="10">10 items</option><option value="20">20 items</option><option value="32">32 items</option></select></div></div><label class="check"><input id="shuffle" type="checkbox" checked>Shuffle questions</label><button class="primary" id="start">Start new session</button><p class="help" id="modehelp"></p><div id="storage"></div><details><summary>How to use</summary><p>Flashcards: answer aloud, reveal, then mark your recall. Multiple choice: receive feedback after each answer. Practice test: finish before seeing your score and explanations.</p><p>Space reveals a flashcard. Arrow keys navigate. In a quiz, 1–4 selects an option. Star items to revisit them.</p><p>Starting a new session or changing mode ends the current run. Saved recall and quiz results remain until reset. Test answers are saved only when you finish the test.</p></details></aside>
+<main><div class="stats" aria-label="Overall progress"><div class="stat"><strong id="known">—</strong><span>Cards recalled</span></div><div class="stat"><strong id="accuracy">—</strong><span>Quiz accuracy</span></div><div class="stat"><strong id="reviewcount">0</strong><span>Quiz items to review</span></div></div><section class="study" id="study" aria-label="Study area"><p class="empty">Loading study items. If this message stays visible in a file preview, open the hosted page in a browser or use the downloaded file on a computer.</p></section><div class="below"><span id="status" role="status" aria-live="polite"></span><button class="subtle" id="reset">Reset saved progress</button></div></main></div>
+<footer>
+<!-- EDIT COURSE FOOTER: title, source notes and links -->
+<strong>Content:</strong> <span id="cardtotal">—</span> recall cards and <span id="quiztotal">—</span> multiple-choice items based on <em>2026 AMH New POI Review</em>. These are study materials, not an official exam or a guarantee of retest questions.<details><summary>Source notes and one correction</summary><p>Lesson and question numbers follow the supplied review. Flashcard 64 is split into two topics. Multiple-choice options are shuffled each session, so answer letters change. Explanations summarize the review; the referenced lesson slides have not been supplied.</p><p>Question 54 in the POI calls the Quartermaster unit struck at Dhahran National Guard. This app corrects it to the <strong>14th Quartermaster Detachment, Army Reserve</strong>. <a href="https://qmmuseum.army.mil/research/history-heritage/water/14th-QM-Detachment.html" target="_blank" rel="noopener noreferrer">U.S. Army Quartermaster Museum source</a> (requires internet).</p><!-- END EDIT COURSE FOOTER -->
+<p>Progress is stored only in this browser when local storage is available. It does not sync, travel with a shared copy, or send information anywhere. Some browsers restrict saving progress for local HTML files; all study modes still work without saving.</p></details></footer>
+</div><dialog id="resetdialog"><h2>Reset your progress?</h2><p>This clears recalled cards, quiz results, and stars saved by this browser. It will also restart the current session.</p><div class="actions"><button id="cancelreset">Keep progress</button><button id="confirmreset" class="primary">Reset progress</button></div></dialog>
+<!-- BEGIN EDITABLE STUDY DATA: settings, lessons, cards, questions -->
+<script id="study-data" type="application/json">
+{
+  "settings": {
+    "deckId": "ocs-amh-study-v1",
+    "itemLabel": "POI",
+    "sourceLabel": "POI source",
+    "referenceLabel": "Referenced slide"
+  },
+
+  "lessons": {
+    "L1": "1 · Colonial & early Revolution",
+    "L2": "2 · Late Revolution & early republic",
+    "L3": "3 · Mexican & Civil wars",
+    "L4": "4 · Civil to Spanish-American War",
+    "L5": "5 · WWI to mid-WWII",
+    "L6": "6 · WWII through Korea",
+    "L7": "7 · Cold War & Vietnam",
+    "L8A": "8A · Post-Vietnam through 2006",
+    "L8B": "8B · 2006 through 2018"
+  },
+
+  "cards": [
+    {"id": "01", "lesson": "L1", "q": "How does the POI define war?", "answer": "Violent conflict between organized groups seeking to impose their will.", "sourceId": 1},
+    {"id": "02", "lesson": "L1", "q": "Why should officers study military history?", "answer": "It helps them understand war and military affairs in their political, social, economic, and professional contexts.", "sourceId": 2},
+    {"id": "03", "lesson": "L1", "q": "Why was the American rifle better suited to woodland fighting than conventional line tactics?", "answer": "Its accuracy favored aimed fire; slower loading and lack of a standard bayonet made it less useful in line combat.", "sourceId": 3},
+    {"id": "04", "lesson": "L1", "q": "What determined whether conventional or irregular methods worked in colonial North America?", "answer": "Terrain and the opposing force's capabilities and methods.", "sourceId": 4},
+    {"id": "05", "lesson": "L1", "q": "What do Braddock's defeat and the British victory at Quebec show when compared?", "answer": "Colonial warfare was mixed: woodland fighting could defeat regulars, while disciplined conventional forces could succeed where conditions favored them.", "sourceId": 5},
+    {"id": "06", "lesson": "L1", "q": "What explains the Continental Army's supply hardship at Valley Forge?", "answer": "Weaknesses in the supply system prevented available resources from reliably reaching the Army.", "sourceId": 6},
+    {"id": "07", "lesson": "L1", "q": "Why did Trenton and Princeton matter beyond the battlefield?", "answer": "The victories revived morale and confidence in the Revolution and helped Washington keep an army in the field.", "sourceId": 7},
+    {"id": "08", "lesson": "L2", "q": "What shaped operations in the Revolution's southern theater?", "answer": "Terrain, maneuver, militia activity, and competition for local support.", "sourceId": 8},
+    {"id": "09", "lesson": "L2", "q": "What did the Battle of Monmouth demonstrate about Valley Forge?", "answer": "The Continental Army could fight more effectively in a conventional battle after its training and reforms.", "sourceId": 9},
+    {"id": "10", "lesson": "L2", "q": "How were military powers divided between the president and Congress in the Early Republic?", "answer": "The president was commander in chief; Congress retained major authority over raising, regulating, and funding forces.", "sourceId": 10},
+    {"id": "11", "lesson": "L2", "q": "How did Jefferson use military institutions despite his distrust of standing forces?", "answer": "He signed the legislation establishing West Point and used Army personnel for the Lewis and Clark expedition.", "sourceId": 11},
+    {"id": "12", "lesson": "L2", "q": "What two weaknesses exposed U.S. unpreparedness in the War of 1812?", "answer": "Poor campaign logistics and uneven militia performance.", "sourceId": 12},
+    {"id": "13", "lesson": "L2", "q": "What did the United States achieve in the War of 1812, and which aims went unmet?", "answer": "It retained its borders and confirmed sovereignty but did not conquer Canada or secure a treaty settlement of its maritime grievances.", "sourceId": 13},
+    {"id": "14", "lesson": "L2", "q": "What recurring problems complicated U.S. campaigns against Indigenous forces?", "answer": "Difficult terrain, irregular opposition, weak transport and supply, and limits on sustained campaigning.", "sourceId": 14},
+    {"id": "15", "lesson": "L2", "q": "Where did Jackson campaign in 1818, and what later happened to that territory?", "answer": "He entered Spanish Florida during the First Seminole War. Spain later ceded Florida to the United States.", "sourceId": 15},
+    {"id": "16", "lesson": "L2", "q": "Why did the Second Seminole War last from 1835 to 1842?", "answer": "Florida's difficult terrain, Seminole irregular resistance, limits on sustained campaigning, and the U.S. objective of forced removal prolonged it.", "sourceId": 16},
+    {"id": "17", "lesson": "L3", "q": "What was Manifest Destiny?", "answer": "The belief that the United States was destined to expand across the continent from coast to coast.", "sourceId": 17},
+    {"id": "18", "lesson": "L3", "q": "How did Texas contribute to the Mexican War?", "answer": "Mexico opposed U.S. annexation of Texas, and a disputed border helped trigger fighting in 1846.", "sourceId": 18},
+    {"id": "19", "lesson": "L3", "q": "What was the broad U.S. approach to the Mexican War?", "answer": "Multiple offensives sought to seize territory, defeat Mexican forces, and gain leverage for a settlement; Scott's campaign took Mexico City.", "sourceId": 19},
+    {"id": "20", "lesson": "L3", "q": "How did Resaca de la Palma differ from Palo Alto?", "answer": "Different terrain called for different tactics. After Resaca de la Palma, Mexican forces withdrew south of the Rio Grande.", "sourceId": 20},
+    {"id": "21", "lesson": "L3", "q": "What U.S. capability gave Taylor a major advantage at Palo Alto?", "answer": "Mobile field artillery delivered effective fire and disrupted Mexican attacks.", "sourceId": 21},
+    {"id": "22", "lesson": "L3", "q": "What helped Taylor hold his position at Buena Vista?", "answer": "Defensive terrain, mobile artillery, and steady leadership against Santa Anna's larger force.", "sourceId": 22},
+    {"id": "23", "lesson": "L3", "q": "What three factors does the POI emphasize in Scott's Mexico City campaign?", "answer": "Maneuver, careful planning, and effective logistics.", "sourceId": 23},
+    {"id": "24", "lesson": "L3", "q": "How did the Union apply its naval blockade?", "answer": "It established the blockade early in the Civil War and tightened it over time.", "sourceId": 24},
+    {"id": "25", "lesson": "L3", "q": "Why did Grant's capture of Forts Henry and Donelson matter?", "answer": "With Navy support, Grant gained access along the Tennessee and Cumberland Rivers into the Confederate interior.", "sourceId": 25},
+    {"id": "26", "lesson": "L4", "q": "What were two lasting national outcomes of the Civil War?", "answer": "Slavery ended, and the United States remained a single Union.", "sourceId": 26},
+    {"id": "27", "lesson": "L4", "q": "Why did the Civil War yield major military lessons?", "answer": "Its scale and intensity tested how armies mobilized, sustained forces, and coordinated operations across theaters.", "sourceId": 27},
+    {"id": "28", "lesson": "L4", "q": "What factors contributed to the Spanish-American War?", "answer": "The Cuban rebellion, U.S. expansionism, the USS Maine explosion, and public anger.", "sourceId": 28},
+    {"id": "29", "lesson": "L4", "q": "How did Army and Navy readiness differ in 1898?", "answer": "The Navy benefited from rearmament. Army neglect and rapid expansion created training, logistics, and health problems.", "sourceId": 29},
+    {"id": "30", "lesson": "L4", "q": "How did U.S. strategy expand during the Spanish-American War?", "answer": "It began with a blockade of Cuba and broadened to operations in the Caribbean and the Philippines.", "sourceId": 30},
+    {"id": "31", "lesson": "L4", "q": "When did the Spanish-American War ceasefire and peace treaty occur?", "answer": "A ceasefire came in August 1898; the Treaty of Paris was signed in December 1898.", "sourceId": 31},
+    {"id": "32", "lesson": "L4", "q": "What major commitment followed victory over Spain?", "answer": "Overseas responsibilities expanded, including the Philippine-American War.", "sourceId": 32},
+    {"id": "33", "lesson": "L5", "q": "What did rapid U.S. mobilization for World War I leave short?", "answer": "Modern weapons and equipment, combat training, and combined-arms preparation.", "sourceId": 33},
+    {"id": "34", "lesson": "L5", "q": "What did the World War I Square Division prioritize?", "answer": "Mass, depth, and staying power for prolonged fighting rather than agility and ease of deployment.", "sourceId": 34},
+    {"id": "35", "lesson": "L5", "q": "What was the historical purpose of German Hutier tactics in World War I?", "answer": "They were an effort to overcome the trench stalemate through infantry initiative, maneuver, and combined arms.", "sourceId": 35},
+    {"id": "36", "lesson": "L5", "q": "How did the pre-World War II Triangle Division differ from the Square Division?", "answer": "It was smaller and designed to be more flexible, maneuverable, and deployable.", "sourceId": 36},
+    {"id": "37", "lesson": "L5", "q": "What developments in Germany and Japan helped lead to World War II?", "answer": "Germany rearmed and expanded under Hitler; Japan expanded into China, increasing tensions with the United States.", "sourceId": 37},
+    {"id": "38", "lesson": "L5", "q": "What broad military and civil measures did the U.S. combine in the Philippine War?", "answer": "Military pressure and participation by local forces alongside conciliation, aid, and public works.", "sourceId": 38},
+    {"id": "39", "lesson": "L6", "q": "What conditions made the Normandy landings and buildup possible?", "answer": "Allied air and naval superiority, including the ability to protect shipping against German submarines.", "sourceId": 39},
+    {"id": "40", "lesson": "L6", "q": "What was Germany's objective in the Battle of the Bulge?", "answer": "Use surprise in the Ardennes to seize Antwerp and disrupt the Western Allied coalition.", "sourceId": 40},
+    {"id": "41", "lesson": "L6", "q": "What was the outcome of Germany's Ardennes offensive?", "answer": "It failed to reach Antwerp. The Allies eliminated the bulge, and Germany lost substantial troops and equipment.", "sourceId": 41},
+    {"id": "42", "lesson": "L6", "q": "What made the post-World War II force a Hollow Army?", "answer": "Drawdowns and budget limits left units understrength, equipment worn or missing, and training inadequate.", "sourceId": 42},
+    {"id": "43", "lesson": "L6", "q": "Who began the Korean War, and under what authority did the U.S.-led response occur?", "answer": "North Korea invaded South Korea in June 1950. The United States led the military response under U.N. authority.", "sourceId": 43},
+    {"id": "44", "lesson": "L6", "q": "Why did the Inchon landing reverse momentum in Korea?", "answer": "It threatened North Korean lines of communication and supported the breakout from the Pusan Perimeter.", "sourceId": 44},
+    {"id": "45", "lesson": "L7", "q": "What did Eisenhower's New Look prioritize?", "answer": "Nuclear deterrence, missiles, and airpower over a larger conventional Army.", "sourceId": 45},
+    {"id": "46", "lesson": "L7", "q": "How was the Pentomic Division organized, and what was its weakness?", "answer": "Five battle groups were intended for an atomic battlefield, but the structure was difficult to sustain and ill suited to other missions.", "sourceId": 46},
+    {"id": "47", "lesson": "L7", "q": "How did the Viet Cong expand their influence in South Vietnam?", "answer": "They combined political organization with military activity and received support from North Vietnam.", "sourceId": 47},
+    {"id": "48", "lesson": "L7", "q": "Why did the National Guard and Reserve have a limited role in Vietnam?", "answer": "U.S. leaders chose to avoid broad mobilization of the reserve components; some units and personnel still served.", "sourceId": 48},
+    {"id": "49", "lesson": "L7", "q": "How did U.S. policy shift after Tet in 1968?", "answer": "The U.S. moved toward de-escalation, restricted and later halted bombing of North Vietnam in 1968, and began peace negotiations.", "sourceId": 49},
+    {"id": "50", "lesson": "L8A", "q": "What was the U.S. role in El Salvador, and how did the war end?", "answer": "A limited advisory effort supported the Salvadoran government rather than a large U.S. combat deployment. The war ended in a negotiated settlement.", "sourceId": 50},
+    {"id": "51", "lesson": "L8A", "q": "What forces took part in Operation Just Cause, and what was its political outcome?", "answer": "Locally based troops, airborne and special operations forces, and air support contributed to the removal of Manuel Noriega in Panama.", "sourceId": 51},
+    {"id": "52", "lesson": "L8A", "q": "What was Desert Shield's purpose, and what logistical challenge did it face?", "answer": "Defend Saudi Arabia and build coalition strength for possible offensive action; planners had to organize deployment logistics without a ready plan for that buildup.", "sourceId": 52},
+    {"id": "53", "lesson": "L8A", "q": "What preceded the Desert Storm ground offensive, and what did it achieve?", "answer": "A 38-day air campaign disrupted Iraqi command and control, supply lines, and units before the ground offensive.", "sourceId": 53},
+    {"id": "54", "lesson": "L8A", "q": "What incident illustrated the risks facing deployed reserve-component units in Desert Storm?", "answer": "A Scud missile strike on a deployed Army Reserve Quartermaster detachment illustrated the danger facing deployed reserve-component support units. The POI labels the struck unit Guard; the historical unit was Army Reserve.", "sourceId": 54},
+    {"id": "55", "lesson": "L8A", "q": "Why did Task Force Hawk matter to Army Transformation?", "answer": "Deployment problems during the Kosovo crisis highlighted a need for more deployable ground forces and helped inform reforms such as Stryker-equipped brigades.", "sourceId": 55},
+    {"id": "56", "lesson": "L8A", "q": "What domestic missions did Guard and Reserve personnel perform after 9/11?", "answer": "They supported homeland security, including duties at airports and Ground Zero.", "sourceId": 56},
+    {"id": "57", "lesson": "L8A", "q": "Who worked together in the initial U.S. campaign in Afghanistan in 2001?", "answer": "U.S. airpower and Special Forces supported the Northern Alliance and other Afghan anti-Taliban forces.", "sourceId": 57},
+    {"id": "58", "lesson": "L8A", "q": "Which four principles of war does the POI associate with the 2003 OIF invasion?", "answer": "Mass, Surprise, Maneuver, and Economy of Force.", "sourceId": 58},
+    {"id": "59", "lesson": "L8A", "q": "Why were tactical victories hard to sustain during OIF Phase IV?", "answer": "U.S. forces were spread too thin and Iraqi security forces were too weak to maintain security after battles.", "sourceId": 59},
+    {"id": "60", "lesson": "L8A", "q": "What weakened U.S. legitimacy during OIF Phase IV?", "answer": "Unmet security demands, low troop levels, poor policies, and abuses at Abu Ghraib.", "sourceId": 60},
+    {"id": "61", "lesson": "L8B", "q": "What was the purpose of the Iraq Surge?", "answer": "A temporary increase in U.S. forces aimed to curb violence, demonstrate resolve, and improve stability.", "sourceId": 61},
+    {"id": "62", "lesson": "L8B", "q": "What did counterinsurgency doctrine during the Iraq Surge emphasize beyond combat?", "answer": "Political and social measures, population security, and governance to make military gains last; the POI uses the phrase clear, hold, build.", "sourceId": 62},
+    {"id": "63", "lesson": "L8B", "q": "What changed during the Afghanistan Surge, and where was attention concentrated?", "answer": "U.S. force levels increased, with major attention to Regional Commands South and East, including Helmand and Kandahar in the south.", "sourceId": 63},
+    {"id": "64a", "lesson": "L8B", "q": "What forms of U.S. support against ISIS does the POI associate with Operation Inherent Resolve?", "answer": "Airpower, special operations forces, advisers, and artillery supported partner forces.", "sourceId": 64},
+    {"id": "64b", "lesson": "L8B", "q": "How did Russian aggression affect the Army's posture in Europe in the period covered by the POI?", "answer": "It prompted changes in logistics, brigade combat team posture, and doctrine.", "sourceId": 64}
+  ],
+
+  "questions": [
+    {
+      "id": "1",
+      "lesson": "L1",
+      "q": "Which of the following is correct about the definition of war?",
+      "options": [
+        {"text": "War is a peaceful competition between governments without organized force.", "correct": false},
+        {"text": "War is violent conflict between organized groups seeking to impose their will.", "correct": true},
+        {"text": "War occurs only after a formal declaration.", "correct": false},
+        {"text": "War exists only when an enemy capital is captured.", "correct": false}
+      ],
+      "why": "War is violent conflict between organized groups seeking to impose their will.",
+      "slide": "“Before We Discuss Military History, Let’s Define War.”"
+    },
+
+    {
+      "id": "2",
+      "lesson": "L1",
+      "q": "Which of the following is correct about the value of military history?",
+      "options": [
+        {"text": "It is useful only for memorizing dates and commanders.", "correct": false},
+        {"text": "It helps officers understand war and military affairs in wider national contexts.", "correct": true},
+        {"text": "It has no relevance to modern military professionals.", "correct": false},
+        {"text": "It replaces leadership development and judgment.", "correct": false}
+      ],
+      "why": "Military history supports understanding of war and its political, social, economic, and professional context.",
+      "slide": "“The Value of Military History.”"
+    },
+
+    {
+      "id": "3",
+      "lesson": "L1",
+      "q": "Which statement accurately contrasts European military methods with warfare in colonial North America?",
+      "options": [
+        {"text": "European weapons and tactics worked equally well regardless of terrain.", "correct": false},
+        {"text": "The American rifle better suited woodland guerrilla fighting than conventional line tactics.", "correct": true},
+        {"text": "Colonists rejected all European weapons.", "correct": false},
+        {"text": "Smoothbore muskets fired slower than American rifles.", "correct": false}
+      ],
+      "why": "Rifles had value in woodland fighting but were less suited to conventional line tactics.",
+      "slide": "“So From What We’ve Read So Far.”"
+    },
+
+    {
+      "id": "4",
+      "lesson": "L1",
+      "q": "Which of the following is correct about warfare in colonial North America?",
+      "options": [
+        {"text": "Colonial forces used only European linear tactics.", "correct": false},
+        {"text": "Terrain and enemy capabilities influenced whether forces used conventional or guerrilla-style tactics.", "correct": true},
+        {"text": "Organized formations were never used.", "correct": false},
+        {"text": "Colonial warfare depended only on naval operations.", "correct": false}
+      ],
+      "why": "Tactical methods varied based on terrain and enemy methods.",
+      "slide": "“Notable Characteristics of These Wars.”"
+    },
+
+    {
+      "id": "5",
+      "lesson": "L1",
+      "q": "Which of the following is correct about Braddock’s defeat and the Battle of Quebec?",
+      "options": [
+        {"text": "They illustrate the mixed tactical character of colonial warfare.", "correct": true},
+        {"text": "They prove regular forces could never succeed in North America.", "correct": false},
+        {"text": "They occurred during the Civil War.", "correct": false},
+        {"text": "They show terrain did not affect operations.", "correct": false}
+      ],
+      "why": "The lesson uses them as French and Indian War examples in discussing mixed tactics.",
+      "slide": "“Notable Characteristics of These Wars.”"
+    },
+
+    {
+      "id": "6",
+      "lesson": "L1",
+      "q": "Which of the following is correct regarding Continental Army supply difficulties at Valley Forge?",
+      "options": [
+        {"text": "The Army suffered because the United States had no supplies anywhere.", "correct": false},
+        {"text": "Poor conditions reflected supply-system problems and required perseverance.", "correct": true},
+        {"text": "Valley Forge occurred after Yorktown.", "correct": false},
+        {"text": "France immediately provided all needed supplies.", "correct": false}
+      ],
+      "why": "The problem involved the Army supply system, not a complete absence of supplies.",
+      "slide": "“Before We See How Well the Post-Valley Forge Army Will Do, Let’s Review the Revolutionary War Up to Early 1778.”"
+    },
+
+    {
+      "id": "7",
+      "lesson": "L1",
+      "q": "Which statement best reflects the strategic importance of Trenton and Princeton?",
+      "options": [
+        {"text": "The victories were tactically unimportant.", "correct": false},
+        {"text": "The victories were tactical successes that also strengthened the American cause strategically.", "correct": true},
+        {"text": "The victories ended the Revolutionary War.", "correct": false},
+        {"text": "The victories occurred after Yorktown.", "correct": false}
+      ],
+      "why": "The victories reinvigorated the American cause and helped Washington retain an army.",
+      "slide": "“Trenton and Princeton: Small Battles, Big Strategic Impact.”"
+    },
+
+    {
+      "id": "8",
+      "lesson": "L2",
+      "q": "Which of the following is correct about the southern theater of the Revolutionary War?",
+      "options": [
+        {"text": "Both sides remained in coastal fortifications.", "correct": false},
+        {"text": "Terrain, militia activity, maneuver, and local support affected campaigns.", "correct": true},
+        {"text": "Britain abandoned the South before major fighting.", "correct": false},
+        {"text": "The southern theater ended before 1778.", "correct": false}
+      ],
+      "why": "Southern campaigns involved maneuver, militia operations, terrain, and competing local support.",
+      "slide": "“The Southern Area, 1778–1781.”"
+    },
+
+    {
+      "id": "9",
+      "lesson": "L2",
+      "q": "Which statement accurately describes the Continental Army at Monmouth?",
+      "options": [
+        {"text": "It demonstrated Valley Forge improvements while fighting conventionally.", "correct": true},
+        {"text": "It refused to engage British forces after Valley Forge.", "correct": false},
+        {"text": "It proved the Army could fight only as guerrillas.", "correct": false},
+        {"text": "It occurred after Yorktown.", "correct": false}
+      ],
+      "why": "Monmouth demonstrated the Continental Army’s improved conventional performance after Valley Forge.",
+      "slide": "“Let’s Review the War from 1778 Through 1783.”"
+    },
+
+    {
+      "id": "10",
+      "lesson": "L2",
+      "q": "Which of the following is correct about Early Republic military affairs?",
+      "options": [
+        {"text": "The president controlled military budgets without Congress.", "correct": false},
+        {"text": "The president was commander in chief while Congress retained major military and budget authority.", "correct": true},
+        {"text": "Congress permanently controlled all militia employment.", "correct": false},
+        {"text": "The militia was immediately well armed and disciplined.", "correct": false}
+      ],
+      "why": "The president was commander in chief, but Congress retained significant military authority.",
+      "slide": "“Before We Proceed with the War of 1812, Let’s Review Military Affairs in the Early Republic from 1783 to 1812.”"
+    },
+
+    {
+      "id": "11",
+      "lesson": "L2",
+      "q": "Which statement accurately describes Thomas Jefferson’s relationship with the military?",
+      "options": [
+        {"text": "He favored a large standing Army and opposed military education.", "correct": false},
+        {"text": "He distrusted the military but established the U.S. Military Academy and used Army personnel in the Lewis and Clark Expedition.", "correct": true},
+        {"text": "He abolished the Army.", "correct": false},
+        {"text": "He rejected Army support for exploration.", "correct": false}
+      ],
+      "why": "The lesson identifies both Jefferson’s distrust and his use of military institutions and personnel.",
+      "slide": "“Before We Proceed with the War of 1812, Let’s Review Military Affairs in the Early Republic from 1783 to 1812.”"
+    },
+
+    {
+      "id": "12",
+      "lesson": "L2",
+      "q": "Which of the following is correct about U.S. preparedness for the War of 1812?",
+      "options": [
+        {"text": "Prewar policies prepared the nation well for logistics and militia operations.", "correct": false},
+        {"text": "Logistics and militia performance revealed serious limits in prewar policies.", "correct": true},
+        {"text": "The United States did not use militia forces.", "correct": false},
+        {"text": "The war involved only naval operations.", "correct": false}
+      ],
+      "why": "Campaign logistics and militia performance demonstrated inadequate readiness.",
+      "slide": "“Let’s Review the War of 1812 and Indian Wars from the 1790s Through the 1840s.”"
+    },
+
+    {
+      "id": "13",
+      "lesson": "L2",
+      "q": "Which statement best summarizes U.S. results in the War of 1812?",
+      "options": [
+        {"text": "The United States conquered Canada and ended Royal Navy harassment.", "correct": false},
+        {"text": "The United States failed to attain all aims but confirmed sovereignty by retaining its borders.", "correct": true},
+        {"text": "Britain retained major U.S. territory after peace.", "correct": false},
+        {"text": "The United States achieved all aims through naval supremacy.", "correct": false}
+      ],
+      "why": "The United States retained its borders and confirmed sovereignty despite failing to seize Canada or end naval harassment.",
+      "slide": "“The War of 1812: Aims and Results.”"
+    },
+
+    {
+      "id": "14",
+      "lesson": "L2",
+      "q": "Which statement accurately describes a major challenge of U.S. Indian War operations?",
+      "options": [
+        {"text": "U.S. forces faced only conventional formations on open terrain.", "correct": false},
+        {"text": "Terrain, irregular methods, logistics, and limited campaigning complicated operations.", "correct": true},
+        {"text": "The United States relied only on diplomacy.", "correct": false},
+        {"text": "The Army needed no tactical adaptation.", "correct": false}
+      ],
+      "why": "The course identifies terrain, guerrilla warfare, transportation, and logistics as key challenges.",
+      "slide": "“The Second Seminole War, 1835–1842.”"
+    },
+
+    {
+      "id": "15",
+      "lesson": "L2",
+      "q": "Which of the following is correct about the First Seminole War?",
+      "options": [
+        {"text": "Jackson remained in Georgia.", "correct": false},
+        {"text": "Jackson entered Spanish Florida in 1818, and Spain later ceded Florida to the United States.", "correct": true},
+        {"text": "All Seminoles immediately moved west.", "correct": false},
+        {"text": "U.S. forces had no logistical problems.", "correct": false}
+      ],
+      "why": "Jackson invaded Spanish Florida, and Spain later ceded Florida to the United States.",
+      "slide": "“The First Seminole War, 1817–1818.”"
+    },
+
+    {
+      "id": "16",
+      "lesson": "L2",
+      "q": "Which of the following is correct about the Second Seminole War’s long duration?",
+      "options": [
+        {"text": "Florida favored large formations and secure supply routes.", "correct": false},
+        {"text": "Terrain, guerrilla methods, limited campaigning, and the removal objective prolonged the war.", "correct": true},
+        {"text": "The United States refused to deploy forces.", "correct": false},
+        {"text": "Spain retained Florida during the war.", "correct": false}
+      ],
+      "why": "Jungle terrain, guerrilla methods, limited campaigning, and the transfer objective complicated the war.",
+      "slide": "“The Second Seminole War, 1835–1842.”"
+    },
+
+    {
+      "id": "17",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Manifest Destiny?",
+      "options": [
+        {"text": "It opposed western expansion.", "correct": false},
+        {"text": "It reflected belief that the United States was destined to settle the continent from coast to coast.", "correct": true},
+        {"text": "It was a Mexican policy to regain Texas.", "correct": false},
+        {"text": "It rejected U.S. interest in Pacific territory.", "correct": false}
+      ],
+      "why": "Manifest Destiny supported U.S. continental expansion.",
+      "slide": "“Deep Background for the Mexican War: Manifest Destiny.”"
+    },
+
+    {
+      "id": "18",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Texas’s role in the Mexican War?",
+      "options": [
+        {"text": "Texas annexation was immediate and undisputed.", "correct": false},
+        {"text": "Annexation remained controversial, and border tensions contributed to violence in 1846.", "correct": true},
+        {"text": "Mexico supported annexation.", "correct": false},
+        {"text": "Texas had no connection to the war.", "correct": false}
+      ],
+      "why": "Mexican opposition, annexation controversy, and border tensions contributed to war.",
+      "slide": "“Texas’ Role in the Mexican War.”"
+    },
+
+    {
+      "id": "19",
+      "lesson": "L3",
+      "q": "Which statement best describes the U.S. approach to the Mexican War?",
+      "options": [
+        {"text": "The United States used multiple offensives to seize territory and remove Mexican threats.", "correct": true},
+        {"text": "The United States limited operations to the Atlantic coast.", "correct": false},
+        {"text": "The United States used only naval forces.", "correct": false},
+        {"text": "The United States had no territorial objectives.", "correct": false}
+      ],
+      "why": "U.S. strategy used multiple offensives, including Scott’s Mexico City campaign.",
+      "slide": "“The U.S. Declared War on Mexico Three Days After the Resaca Battle.”"
+    },
+
+    {
+      "id": "20",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Resaca de la Palma?",
+      "options": [
+        {"text": "Terrain did not affect tactics.", "correct": false},
+        {"text": "Different terrain required different tactics, and Mexican forces retreated south of the Rio Grande.", "correct": true},
+        {"text": "Naval gunfire decided the battle.", "correct": false},
+        {"text": "It occurred after Mexico City fell.", "correct": false}
+      ],
+      "why": "The terrain differed from Palo Alto, requiring different tactics; Mexican forces then withdrew.",
+      "slide": "“The Battles of Palo Alto and Resaca de la Palma.”"
+    },
+
+    {
+      "id": "21",
+      "lesson": "L3",
+      "q": "Which of the following is correct about factors contributing to U.S. success during the Mexican War?",
+      "options": [
+        {"text": "Mobile U.S. artillery at Palo Alto disrupted Mexican attacks with effective fires.", "correct": true},
+        {"text": "Mexico had no artillery or cavalry at Palo Alto.", "correct": false},
+        {"text": "U.S. commanders avoided maneuver throughout the war.", "correct": false},
+        {"text": "U.S. victories depended only on naval operations.", "correct": false}
+      ],
+      "why": "Mobile U.S. artillery was a major advantage at Palo Alto.",
+      "slide": "“The Battles of Palo Alto and Resaca de la Palma.”"
+    },
+
+    {
+      "id": "22",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Buena Vista?",
+      "options": [
+        {"text": "Taylor used defensive terrain, mobile artillery, and cool leadership to hold his position.", "correct": true},
+        {"text": "Taylor faced no opposition under Santa Anna.", "correct": false},
+        {"text": "Taylor withdrew before the battle.", "correct": false},
+        {"text": "Naval gunfire decided the battle.", "correct": false}
+      ],
+      "why": "Defensive terrain, mobile artillery, and Taylor’s leadership contributed to success.",
+      "slide": "“Taylor Stops Santa Anna at Buena Vista.”"
+    },
+
+    {
+      "id": "23",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Scott’s Mexico City Campaign?",
+      "options": [
+        {"text": "Scott avoided maneuver and relied only on frontal attacks.", "correct": false},
+        {"text": "Scott emphasized maneuver, planning, and excellent logistics.", "correct": true},
+        {"text": "Scott never moved beyond Vera Cruz.", "correct": false},
+        {"text": "Mexico surrendered before Scott began campaigning.", "correct": false}
+      ],
+      "why": "The campaign is a major example of maneuver, planning, and logistics.",
+      "slide": "“Winfield Scott’s Mexico City Campaign: Factors in His Success.”"
+    },
+
+    {
+      "id": "24",
+      "lesson": "L3",
+      "q": "Which of the following is correct about Union strategy during the Civil War?",
+      "options": [
+        {"text": "The Union delayed the blockade until war’s end.", "correct": false},
+        {"text": "The Union established the blockade early and tightened it over time.", "correct": true},
+        {"text": "The Union rejected naval blockade as ineffective.", "correct": false},
+        {"text": "The blockade applied only to inland rivers.", "correct": false}
+      ],
+      "why": "The Union implemented the blockade early and increased its effectiveness over time.",
+      "slide": "“Early Civil War Strategies: A Rough Synopsis.”"
+    },
+
+    {
+      "id": "25",
+      "lesson": "L3",
+      "q": "Which statement accurately describes Grant’s early western operations?",
+      "options": [
+        {"text": "Grant avoided Navy support and rivers.", "correct": false},
+        {"text": "Grant captured Forts Henry and Donelson, used Navy support, and gained control of key rivers.", "correct": true},
+        {"text": "Grant refused to attack Confederate positions.", "correct": false},
+        {"text": "Grant captured Gettysburg before Fort Donelson.", "correct": false}
+      ],
+      "why": "Grant’s Fort Henry and Donelson victories gave the Union access to the Deep South.",
+      "slide": "“Grant’s 1862 Western Advance Started Well.”"
+    },
+
+    {
+      "id": "26",
+      "lesson": "L4",
+      "q": "Which of the following is correct about the Civil War’s national impact?",
+      "options": [
+        {"text": "The war reinforced slavery.", "correct": false},
+        {"text": "The war ended slavery and confirmed an indissoluble Union.", "correct": true},
+        {"text": "The war permanently reduced U.S. industrial power.", "correct": false},
+        {"text": "The war had no political impact.", "correct": false}
+      ],
+      "why": "The war ended slavery and confirmed the United States as an indissoluble Union.",
+      "slide": "“Civil War Impact: Combat and National.”"
+    },
+
+    {
+      "id": "27",
+      "lesson": "L4",
+      "q": "Which of the following is correct about the Civil War as a military conflict?",
+      "options": [
+        {"text": "It produced no meaningful military lessons.", "correct": false},
+        {"text": "It produced major lessons because of its scale and intensity.", "correct": true},
+        {"text": "It involved only small frontier fights.", "correct": false},
+        {"text": "Naval operations alone decided the war.", "correct": false}
+      ],
+      "why": "Its intensity and scale produced important military lessons.",
+      "slide": "“Civil War Impact: Combat and National.”"
+    },
+
+    {
+      "id": "28",
+      "lesson": "L4",
+      "q": "Which of the following is correct about the origins of the Spanish-American War?",
+      "options": [
+        {"text": "Cuban rebellion, expansionism, the USS Maine, and public anger contributed to war.", "correct": true},
+        {"text": "Spain invaded the continental United States.", "correct": false},
+        {"text": "The United States and Spain agreed to govern Cuba jointly.", "correct": false},
+        {"text": "The war resulted only from conflict with Japan.", "correct": false}
+      ],
+      "why": "The lesson identifies all of these factors as causes of the war.",
+      "slide": "“Origins and Start of the Spanish-American War.”"
+    },
+
+    {
+      "id": "29",
+      "lesson": "L4",
+      "q": "Which of the following is correct about U.S. readiness for the Spanish-American War?",
+      "options": [
+        {"text": "The Army was better prepared than the Navy.", "correct": false},
+        {"text": "The Navy was relatively prepared, while Army neglect and rapid expansion created support problems.", "correct": true},
+        {"text": "Neither service had an operational role.", "correct": false},
+        {"text": "Army expansion caused no logistics or disease problems.", "correct": false}
+      ],
+      "why": "The Navy benefited from rearmament; Army neglect and rapid expansion caused readiness problems.",
+      "slide": "“Origins and Start of the Spanish-American War.”"
+    },
+
+    {
+      "id": "30",
+      "lesson": "L4",
+      "q": "Which of the following is correct about initial U.S. strategy in the Spanish-American War?",
+      "options": [
+        {"text": "Strategy began with a Cuba blockade and expanded to Caribbean and Philippine operations.", "correct": true},
+        {"text": "The United States focused only on invading Spain.", "correct": false},
+        {"text": "The United States avoided naval operations.", "correct": false},
+        {"text": "Cuban rebels conducted all U.S. operations.", "correct": false}
+      ],
+      "why": "U.S. strategy began with blockade but expanded rapidly.",
+      "slide": "“The Spanish-American War’s Quickly Evolving Strategy.”"
+    },
+
+    {
+      "id": "31",
+      "lesson": "L4",
+      "q": "Which of the following is correct about the end of the Spanish-American War?",
+      "options": [
+        {"text": "The United States accepted a ceasefire in August 1898 and a peace treaty in December 1898.", "correct": true},
+        {"text": "Spain retained control of all overseas possessions after the war.", "correct": false},
+        {"text": "The United States immediately ended all overseas commitments.", "correct": false},
+        {"text": "The war ended after Spain invaded the continental United States.", "correct": false}
+      ],
+      "why": "The course identifies an August ceasefire followed by a December peace treaty.",
+      "slide": "“Victory Over Spain.”"
+    },
+
+    {
+      "id": "32",
+      "lesson": "L4",
+      "q": "Which of the following is correct about the aftermath of victory over Spain?",
+      "options": [
+        {"text": "The United States avoided further overseas commitments.", "correct": false},
+        {"text": "Victory created additional challenges and commitments, including the Philippine War.", "correct": true},
+        {"text": "Spain retained all former overseas possessions.", "correct": false},
+        {"text": "The war ended U.S. involvement in the Pacific.", "correct": false}
+      ],
+      "why": "The course identifies the Philippine War as a major follow-on consequence of victory.",
+      "slide": "“Victory Over Spain.”"
+    },
+
+    {
+      "id": "33",
+      "lesson": "L5",
+      "q": "Which of the following is correct about U.S. Army mobilization for World War I?",
+      "options": [
+        {"text": "The United States entered World War I with all needed tanks, aircraft, and modern weapons already fielded.", "correct": false},
+        {"text": "Rapid mobilization created serious shortfalls in high-technology weapons, training, and combined-arms preparation.", "correct": true},
+        {"text": "The Army had sufficient time to master advanced infiltration tactics before major combat.", "correct": false},
+        {"text": "Mobilization eliminated differences between stateside and in-theater training requirements.", "correct": false}
+      ],
+      "why": "Rapid mobilization created weapon-production, combat-training, and combined-arms shortfalls.",
+      "slide": "“Mobilization Downsides.”"
+    },
+
+    {
+      "id": "34",
+      "lesson": "L5",
+      "q": "Which of the following is correct about the World War I Square Division?",
+      "options": [
+        {"text": "The Square Division emphasized agility and small-unit flexibility for rapid global deployment.", "correct": false},
+        {"text": "The Square Division was designed for mass and depth, providing staying power during prolonged trench warfare.", "correct": true},
+        {"text": "The Square Division was smaller than the later Triangle Division.", "correct": false},
+        {"text": "The Square Division was created for tactical nuclear warfare during the Cold War.", "correct": false}
+      ],
+      "why": "The Square Division emphasized mass, depth, and staying power rather than agility.",
+      "slide": "“The U.S. Organized for a Big Overseas War.”"
+    },
+
+    {
+      "id": "35",
+      "lesson": "L5",
+      "q": "Which of the following is correct about Hutier tactics?",
+      "options": [
+        {"text": "Hutier tactics used infantry combined arms, initiative, and maneuver to penetrate trench defenses.", "correct": true},
+        {"text": "Hutier tactics relied on cavalry charges without infantry coordination.", "correct": false},
+        {"text": "Hutier tactics were an American innovation rejected by Germany.", "correct": false},
+        {"text": "Hutier tactics required no training, experience, or initiative.", "correct": false}
+      ],
+      "why": "Hutier or infiltration tactics used combined arms, initiative, and maneuver to overcome trench networks.",
+      "slide": "“Germany’s Late-War Stalemate Solutions Yielded Mixed Blessings.”"
+    },
+
+    {
+      "id": "36",
+      "lesson": "L5",
+      "q": "Which of the following is correct about the pre-World War II Triangle Division?",
+      "options": [
+        {"text": "The Triangle Division was larger than the Square Division and emphasized massed blows over maneuver.", "correct": false},
+        {"text": "The Triangle Division was smaller than the Square Division and designed for flexibility, deployability, and maneuverability.", "correct": true},
+        {"text": "The Triangle Division was created after World War II as part of the Pentomic reorganization.", "correct": false},
+        {"text": "The Triangle Division eliminated the need for armor, artillery, and aviation.", "correct": false}
+      ],
+      "why": "The Triangle Division was smaller and designed to improve flexibility and maneuverability for global war.",
+      "slide": "“The Army Prepared for War.”"
+    },
+
+    {
+      "id": "37",
+      "lesson": "L5",
+      "q": "Which of the following is correct about the rise of the Axis powers before World War II?",
+      "options": [
+        {"text": "Germany accepted post-World War I restrictions and avoided rearmament under Hitler.", "correct": false},
+        {"text": "Germany rearmed and expanded aggressively, while Japan advanced into China and faced growing tension with the United States.", "correct": true},
+        {"text": "Italy, Germany, and Japan remained politically neutral during the 1930s.", "correct": false},
+        {"text": "Japanese militarists rejected expansion in China and ended disputes with the United States before 1940.", "correct": false}
+      ],
+      "why": "Germany rearmed and expanded aggressively; Japan advanced into China and tensions with the United States grew.",
+      "slide": "“Toward World War II and the Axis Powers.”"
+    },
+
+    {
+      "id": "38",
+      "lesson": "L5",
+      "q": "Which of the following is correct about successful U.S. counterinsurgency in the Philippine War?",
+      "options": [
+        {"text": "U.S. forces relied only on aid programs and avoided combat operations against guerrillas.", "correct": false},
+        {"text": "U.S. operations combined aggressive patrols, outposts, local forces, and conciliation efforts.", "correct": true},
+        {"text": "U.S. forces withdrew from the countryside and gave guerrillas complete freedom of movement.", "correct": false},
+        {"text": "The U.S. Army avoided using Philippine local forces because they could not assist operations.", "correct": false}
+      ],
+      "why": "U.S. counterinsurgency used aggressive force, local forces, outposts, and civil-affairs measures such as aid and infrastructure.",
+      "slide": "“The Philippine War, 1899–1902: Counterinsurgency Success: Will, Force and Conciliation.”"
+    },
+
+    {
+      "id": "39",
+      "lesson": "L6",
+      "q": "Which of the following is correct about the Normandy landings on D-Day?",
+      "options": [
+        {"text": "The invasion required air and naval superiority, including success against the German submarine threat.", "correct": true},
+        {"text": "The invasion succeeded because the Allies avoided naval and air operations before landing in France.", "correct": false},
+        {"text": "The invasion required no logistical buildup because Allied forces could live entirely off French resources.", "correct": false},
+        {"text": "The invasion succeeded because Germany had no forces or aircraft remaining in western Europe.", "correct": false}
+      ],
+      "why": "Allied air and naval superiority, including the anti-submarine campaign, was essential to the invasion and buildup.",
+      "slide": "“D-Day: The Normandy Landings, June 1944.”"
+    },
+
+    {
+      "id": "40",
+      "lesson": "L6",
+      "q": "Which of the following is correct about the Battle of the Bulge?",
+      "options": [
+        {"text": "Hitler’s offensive aimed to regain Antwerp, disrupt the Western Allied coalition, and exploit surprise.", "correct": true},
+        {"text": "The battle was a limited Allied operation designed to seize Berlin before Soviet forces arrived.", "correct": false},
+        {"text": "The German offensive achieved its objective and permanently divided the United States and Britain.", "correct": false},
+        {"text": "The battle occurred in Italy after German forces had abandoned the Ardennes region.", "correct": false}
+      ],
+      "why": "Germany attacked through the Ardennes to seize Antwerp and disrupt the Western Allies.",
+      "slide": "“Battle of the Bulge.”"
+    },
+
+    {
+      "id": "41",
+      "lesson": "L6",
+      "q": "Which of the following is correct about the outcome of the Battle of the Bulge?",
+      "options": [
+        {"text": "German forces reached Antwerp and permanently disrupted the Allied coalition.", "correct": false},
+        {"text": "The offensive failed to reach Antwerp, the Allies eliminated the bulge, and Germany lost significant troops and equipment.", "correct": true},
+        {"text": "The United States ended all operations in western Europe after the offensive began.", "correct": false},
+        {"text": "The offensive forced the Soviet Union to withdraw from eastern Germany.", "correct": false}
+      ],
+      "why": "Germany failed to attain Antwerp, and the offensive cost it significant personnel and equipment.",
+      "slide": "“End Game in Western Europe.”"
+    },
+
+    {
+      "id": "42",
+      "lesson": "L6",
+      "q": "Which of the following is correct about post-World War II U.S. Army readiness?",
+      "options": [
+        {"text": "Postwar drawdowns created a fully manned, fully trained, and fully equipped Army ready for Korea.", "correct": false},
+        {"text": "Postwar budget limits and drawdowns contributed to a Hollow Army with personnel, equipment, and training shortfalls.", "correct": true},
+        {"text": "The Army retained every World War II unit at wartime strength after 1945.", "correct": false},
+        {"text": "Organizational reforms alone eliminated all readiness problems before Korea.", "correct": false}
+      ],
+      "why": "The Hollow Army had limited training, worn or missing equipment, and understrength units.",
+      "slide": "“The U.S., Its Military, and Its Army, 1945–1950.”"
+    },
+
+    {
+      "id": "43",
+      "lesson": "L6",
+      "q": "Which of the following is correct about the start of the Korean War?",
+      "options": [
+        {"text": "North Korea invaded South Korea in June 1950 with a stronger force, and President Truman obtained a United Nations resolution for a U.S.-led response.", "correct": true},
+        {"text": "South Korea invaded North Korea with Soviet support.", "correct": false},
+        {"text": "The United States formally declared war before any fighting began.", "correct": false},
+        {"text": "The United Nations directed its forces to remove South Korea from the Korean Peninsula.", "correct": false}
+      ],
+      "why": "North Korea invaded in June 1950; Truman obtained a U.N. resolution and the United States led the response.",
+      "slide": "“The Korean War’s Start Begins.”"
+    },
+
+    {
+      "id": "44",
+      "lesson": "L6",
+      "q": "Which of the following is correct about the Inchon landing?",
+      "options": [
+        {"text": "Inchon was a defensive withdrawal that allowed North Korean forces to consolidate around the Pusan Perimeter.", "correct": false},
+        {"text": "Inchon was an operational turning movement that cut North Korean lines of communication and helped reverse the war’s momentum.", "correct": true},
+        {"text": "Inchon was a failed naval raid that had no effect on ground operations.", "correct": false},
+        {"text": "Inchon was a Soviet amphibious operation that isolated U.N. forces from Japan.", "correct": false}
+      ],
+      "why": "Inchon cut North Korean lines of communication, supported the Pusan breakout, and routed North Korean forces.",
+      "slide": "“The Inchon Landing, September 1950.”"
+    },
+
+    {
+      "id": "45",
+      "lesson": "L7",
+      "q": "Which of the following is correct about the New Look defense policy?",
+      "options": [
+        {"text": "The New Look emphasized a larger Army budget and reduced nuclear deterrence.", "correct": false},
+        {"text": "The New Look emphasized nuclear deterrence, missiles, and the Air Force more than the Army.", "correct": true},
+        {"text": "The New Look rejected missile development and focused entirely on large conventional ground forces.", "correct": false},
+        {"text": "The New Look ended Army adaptation to new technology and tactical nuclear warfare concepts.", "correct": false}
+      ],
+      "why": "Eisenhower’s New Look emphasized nuclear deterrence and favored missiles and the Air Force over the Army.",
+      "slide": "“The New Look, 1953–1961.”"
+    },
+
+    {
+      "id": "46",
+      "lesson": "L7",
+      "q": "Which of the following is correct about the Pentomic Division?",
+      "options": [
+        {"text": "The Pentomic Division used five battle groups for an anticipated atomic battlefield but proved unsustainable and unsuitable for other scenarios.", "correct": true},
+        {"text": "The Pentomic Division was retained unchanged through Vietnam because it provided ideal conventional-war combat power.", "correct": false},
+        {"text": "The Pentomic Division emphasized traditional regimental warfare and rejected adaptation to nuclear conditions.", "correct": false},
+        {"text": "The Pentomic Division was created during World War I to fight in trench networks.", "correct": false}
+      ],
+      "why": "The Pentomic Division was built for atomic warfare but lacked sustainability and utility in other scenarios.",
+      "slide": "“The Pentomic Division of the Mid/Late 1950s.”"
+    },
+
+    {
+      "id": "47",
+      "lesson": "L7",
+      "q": "Which of the following is correct about the rise of the Viet Cong?",
+      "options": [
+        {"text": "The Viet Cong relied only on conventional military operations and made no effort to gain political support.", "correct": false},
+        {"text": "South Vietnamese communists received North Vietnamese support and combined political and military programs to gain popular support.", "correct": true},
+        {"text": "The Viet Cong declined from 100,000 personnel to 5,000 personnel during the period.", "correct": false},
+        {"text": "The Viet Cong operated only in North Vietnam and had no role in South Vietnamese insurgency.", "correct": false}
+      ],
+      "why": "The Viet Cong combined political and military programs, received North Vietnamese support, and grew substantially.",
+      "slide": "“The Rise of the Viet Cong, 1959–1964.”"
+    },
+
+    {
+      "id": "48",
+      "lesson": "L7",
+      "q": "Which of the following is correct about National Guard and Reserve involvement in Vietnam?",
+      "options": [
+        {"text": "The Guard and Reserve were activated extensively and provided the primary U.S. ground force.", "correct": false},
+        {"text": "A conscious decision not to activate the Guard and Reserve resulted in their minimal involvement in Vietnam.", "correct": true},
+        {"text": "The Guard and Reserve had no readiness issues before or during the Vietnam era.", "correct": false},
+        {"text": "The Guard and Reserve replaced active Army divisions throughout the conflict.", "correct": false}
+      ],
+      "why": "The decision not to activate Guard and Reserve forces caused their limited Vietnam role.",
+      "slide": "“Problems in Vietnam and Elsewhere: Commitment to Service and to This War.”"
+    },
+
+    {
+      "id": "49",
+      "lesson": "L7",
+      "q": "Which of the following is correct about the Tet Offensive and its aftermath?",
+      "options": [
+        {"text": "The Tet Offensive caused the United States to increase commitment indefinitely and expand bombing without negotiations.", "correct": false},
+        {"text": "Following Tet, the United States reduced commitment, stopped bombing North Vietnam, and began peace negotiations.", "correct": true},
+        {"text": "Tet ended the war immediately because North Vietnam surrendered after the first attacks.", "correct": false},
+        {"text": "Tet had no political or strategic impact on U.S. policy toward Vietnam.", "correct": false}
+      ],
+      "why": "After Tet, the United States reduced commitment, halted bombing North Vietnam, and began negotiations.",
+      "slide": "“Tet Offensive, 1968.”"
+    },
+
+    {
+      "id": "50",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about U.S. involvement in El Salvador?",
+      "options": [
+        {"text": "The United States deployed a large conventional Army force that directly defeated Marxist rebels.", "correct": false},
+        {"text": "A limited U.S. Army advisor effort helped the local government hold Marxist rebels at bay, and the war ended in a settlement.", "correct": true},
+        {"text": "The United States avoided all military involvement.", "correct": false},
+        {"text": "U.S. advisors achieved immediate and complete success.", "correct": false}
+      ],
+      "why": "U.S. support was limited; advisor results were mixed, and the war ended through settlement.",
+      "slide": "“Small Wars Occurring after Vietnam and before Desert Storm — El Salvador, 1981–1992.”"
+    },
+
+    {
+      "id": "51",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about Operation Just Cause?",
+      "options": [
+        {"text": "The operation relied exclusively on naval forces.", "correct": false},
+        {"text": "The operation used locally based forces, airborne forces, air support, and special forces to remove a brutal dictator.", "correct": true},
+        {"text": "Night-fighting technology and training failed during the operation.", "correct": false},
+        {"text": "The operation was limited to humanitarian assistance.", "correct": false}
+      ],
+      "why": "Operation Just Cause employed multiple types of forces, and night-fighting technology and training paid off.",
+      "slide": "“Operation Just Cause in Panama, 1989.”"
+    },
+
+    {
+      "id": "52",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about Operation Desert Shield?",
+      "options": [
+        {"text": "Desert Shield aimed only to begin immediate offensive operations into Iraq.", "correct": false},
+        {"text": "Desert Shield protected Saudi Arabia and positioned forces for possible future action despite lacking a preexisting deployment logistics plan.", "correct": true},
+        {"text": "Desert Shield excluded National Guard forces because they could not deploy overseas.", "correct": false},
+        {"text": "Desert Shield was a short air campaign that followed the ground offensive.", "correct": false}
+      ],
+      "why": "Desert Shield protected Saudi Arabia and built combat power for possible action despite logistics shortcomings.",
+      "slide": "“Operation Desert Shield, August 1990–January 1991.”"
+    },
+
+    {
+      "id": "53",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about Operation Desert Storm’s opening campaign?",
+      "options": [
+        {"text": "Ground forces attacked before air operations could affect Iraqi forces.", "correct": false},
+        {"text": "A thirty-eight-day air campaign preceded the ground offensive and disrupted Iraqi military capabilities.", "correct": true},
+        {"text": "The air campaign was limited to defensive patrols.", "correct": false},
+        {"text": "Ground operations began before Iraqi Scud attacks.", "correct": false}
+      ],
+      "why": "The air campaign preceded the ground campaign and disrupted Iraqi command-and-control, supply lines, and units.",
+      "slide": "“Operation Desert Storm: January–February 1991.”"
+    },
+
+    {
+      "id": "54",
+      "lesson": "L8A",
+      "q": "What incident illustrated the lethal risks faced by deployed reserve-component units in Desert Storm?",
+      "options": [
+        {"text": "National Guard forces remained entirely in the United States and faced no lethal risks.", "correct": false},
+        {"text": "A Scud missile strike hit barracks housing an Army Reserve Quartermaster detachment and other U.S. personnel.", "correct": true},
+        {"text": "Guard forces deployed only after all combat operations ended.", "correct": false},
+        {"text": "Guard units replaced all active-duty forces during the ground campaign.", "correct": false}
+      ],
+      "why": "A Scud strike on 25 February 1991 hit barracks housing the 14th Quartermaster Detachment, an Army Reserve unit. The POI calls it National Guard; this practice item corrects that designation.",
+      "slide": "“Operation Desert Storm: January–February 1991.”",
+      "note": "The original review identifies the struck unit as National Guard. The 14th Quartermaster Detachment was Army Reserve; see the museum source in the footer."
+    },
+
+    {
+      "id": "55",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about Task Force HAWK?",
+      "options": [
+        {"text": "Task Force HAWK deployed smoothly, fought extensively, and included Stryker forces.", "correct": false},
+        {"text": "Task Force HAWK’s problems helped inspire Army Transformation initiatives, including Brigade Combat Teams and the Stryker.", "correct": true},
+        {"text": "Task Force HAWK proved no changes in force structure were needed.", "correct": false},
+        {"text": "Task Force HAWK captured Kuwait City during Desert Storm.", "correct": false}
+      ],
+      "why": "The task force’s deployment problems supported later Army Transformation measures.",
+      "slide": "“1990s Combat and ‘Transformation’ — The Kosovo Air Campaign and the Army.”"
+    },
+
+    {
+      "id": "56",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about the domestic response to 9/11?",
+      "options": [
+        {"text": "Guard and Reserve forces were not activated for domestic security.", "correct": false},
+        {"text": "Guard and Reserve forces helped secure domestic sites, including airports and Ground Zero.", "correct": true},
+        {"text": "The U.S. response focused solely on foreign operations.", "correct": false},
+        {"text": "Foreign military forces handled domestic security.", "correct": false}
+      ],
+      "why": "Guard and Reserve personnel were activated for homeland-security duties after the attacks.",
+      "slide": "“9/11 and the Response.”"
+    },
+
+    {
+      "id": "57",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about initial U.S. operations in Afghanistan?",
+      "options": [
+        {"text": "The United States relied only on Special Forces and did not work with Afghan groups or employ airpower.", "correct": false},
+        {"text": "U.S. airpower and Special Forces worked with the Northern Alliance and other rebel forces against the Taliban.", "correct": true},
+        {"text": "The United States supported the Taliban government after 9/11.", "correct": false},
+        {"text": "U.S. forces avoided all Afghan partnerships.", "correct": false}
+      ],
+      "why": "U.S. airpower and Special Forces worked alongside Northern Alliance and other anti-Taliban forces.",
+      "slide": "“Initial Operations in Afghanistan, 2001, Part 1.”"
+    },
+
+    {
+      "id": "58",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about the 2003 Operation Iraqi Freedom invasion?",
+      "options": [
+        {"text": "The invasion employed no maneuver because forces advanced along only one fixed route.", "correct": false},
+        {"text": "The invasion used Mass, Surprise, Maneuver, and Economy of Force.", "correct": true},
+        {"text": "The invasion used only defensive operations and avoided Baghdad.", "correct": false},
+        {"text": "The invasion excluded airborne operations in northern Iraq.", "correct": false}
+      ],
+      "why": "The course identifies these Principles of War as applicable to the 2003 invasion.",
+      "slide": "“The OIF Invasion, March–April 2003 — Principles 1.”"
+    },
+
+    {
+      "id": "59",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about OIF Phase IV in 2003 and 2004?",
+      "options": [
+        {"text": "U.S. forces had enough troops to secure gains permanently after city battles.", "correct": false},
+        {"text": "U.S. forces won tactical victories, but insufficient force levels and weak Iraqi security forces prevented lasting gains.", "correct": true},
+        {"text": "Iraq experienced no lawlessness or insurgency after Saddam Hussein fell.", "correct": false},
+        {"text": "U.S. units remained fixed and did not move between crises.", "correct": false}
+      ],
+      "why": "Tactical victories could not be secured permanently because U.S. forces were overtasked and Iraqi forces were weak.",
+      "slide": "“OIF Phase IV, 2004.”"
+    },
+
+    {
+      "id": "60",
+      "lesson": "L8A",
+      "q": "Which of the following is correct about legitimacy challenges during OIF Phase IV?",
+      "options": [
+        {"text": "Low troop levels, poor policies, and Abu Ghraib strengthened U.S. legitimacy.", "correct": false},
+        {"text": "Security demands, low force levels, poor policies, and Abu Ghraib created legitimacy problems.", "correct": true},
+        {"text": "The United States faced no security or reconstruction responsibilities.", "correct": false},
+        {"text": "Iraqi lawlessness ended immediately after major combat.", "correct": false}
+      ],
+      "why": "The lesson connects these problems to reduced legitimacy and the transition from lawlessness to insurgency.",
+      "slide": "“OIF Phase IV Realities, Part 2.”"
+    },
+
+    {
+      "id": "61",
+      "lesson": "L8B",
+      "q": "Which of the following is correct about the Iraq Surge?",
+      "options": [
+        {"text": "The surge immediately reduced U.S. troop strength because violence had already ended.", "correct": false},
+        {"text": "The surge temporarily increased U.S. forces to reduce violence, show resolve, and stabilize Iraq.", "correct": true},
+        {"text": "The surge relied only on airpower and rejected counterinsurgency doctrine.", "correct": false},
+        {"text": "The surge focused only on kinetic combat and rejected political efforts.", "correct": false}
+      ],
+      "why": "The surge temporarily increased U.S. forces to curb violence and stabilize Iraq before departure.",
+      "slide": "“OIF Phase IV, 2006–2007.”"
+    },
+
+    {
+      "id": "62",
+      "lesson": "L8B",
+      "q": "Which of the following is correct about counterinsurgency doctrine during the Iraq Surge?",
+      "options": [
+        {"text": "Counterinsurgency doctrine rejected political and social factors.", "correct": false},
+        {"text": "Counterinsurgency doctrine emphasized political and social factors to secure military gains and help end the insurgency.", "correct": true},
+        {"text": "Counterinsurgency doctrine directed forces only to clear and never hold or build.", "correct": false},
+        {"text": "Counterinsurgency doctrine required immediate transfer regardless of security conditions.", "correct": false}
+      ],
+      "why": "The course identifies a “clear, hold, build” approach that integrated political and social efforts.",
+      "slide": "“OIF Phase IV, 2006–2007.”"
+    },
+
+    {
+      "id": "63",
+      "lesson": "L8B",
+      "q": "Which of the following is correct about the Afghanistan Surge?",
+      "options": [
+        {"text": "The United States reduced forces immediately and shifted attention away from southern Afghanistan.", "correct": false},
+        {"text": "U.S. force levels increased while Regional Commands South and East received major attention.", "correct": true},
+        {"text": "The surge focused only on northern Afghanistan.", "correct": false},
+        {"text": "The surge occurred before the 2001 Taliban overthrow.", "correct": false}
+      ],
+      "why": "The surge increased U.S. forces and focused heavily on RC South and RC East, especially Helmand and Kandahar.",
+      "slide": "“Afghanistan, 2009–2014.”"
+    },
+
+    {
+      "id": "64",
+      "lesson": "L8B",
+      "q": "Which of the following is correct about Operation Inherent Resolve and U.S. actions in Europe?",
+      "options": [
+        {"text": "The United States did not use airpower, advisors, artillery, or Special Forces against ISIS.", "correct": false},
+        {"text": "Russian aggression caused the Army to close logistical sites and abandon doctrine changes.", "correct": false},
+        {"text": "The United States used airpower, Special Forces, advisors, and artillery against ISIS; Russian aggression drove logistics, Brigade Combat Team, and doctrine changes.", "correct": true},
+        {"text": "These events occurred before 2001 and did not affect Army operations.", "correct": false}
+      ],
+      "why": "The course identifies U.S. support to Iraqi forces against ISIS and Army changes in Europe responding to Russian aggression.",
+      "slide": "“Back to Iraq: Operation Inherent Resolve, 2014–” and “Rising Threats in the 2000s–2010s.”"
+    }
+  ]
+}
+</script>
+<!-- END EDITABLE STUDY DATA. Study logic below: no topic edits needed. -->
+<script>
+'use strict';
+(() => {
+const $=id=>document.getElementById(id);
+let DATA;
+try {
+  DATA=JSON.parse($('study-data').textContent);
+  const fail=message=>{throw new Error(message);};
+  const goodText=t=>typeof t==='string' && t.trim().length>0;
+  if(!goodText(DATA.settings?.deckId)) fail('Settings: add a unique deckId.');
+  if(!DATA.lessons || Array.isArray(DATA.lessons) || typeof DATA.lessons!=='object' ||
+     !Object.keys(DATA.lessons).length || !Object.values(DATA.lessons).every(goodText)) fail('Lessons: add an ID and display name for each lesson.');
+  for(const [kind,items] of [['Flashcards',DATA.cards],['Questions',DATA.questions]]) {
+    if(!Array.isArray(items) || !items.length) fail(kind+': add at least one item.');
+    const seen=new Set();
+    for(const [i,item] of items.entries()) {
+      const label=kind+' row '+(i+1)+(item?.id?' (ID '+item.id+')':'');
+      if(!goodText(item?.id) || seen.has(item.id)) fail(label+': use a unique text ID.');
+      seen.add(item.id);
+      if(!Object.hasOwn(DATA.lessons,item.lesson)) fail(label+': lesson ID is not listed under lessons.');
+      if(!goodText(item.q)) fail(label+': add a prompt.');
+      if(kind==='Flashcards' && !goodText(item.answer)) fail(label+': add an answer.');
+      if(kind==='Questions' && (!Array.isArray(item.options) || item.options.length!==4 ||
+        !item.options.every(o=>goodText(o?.text) && typeof o.correct==='boolean') ||
+        item.options.filter(o=>o.correct).length!==1)) fail(label+': provide four choices and mark exactly one correct.');
+      if(kind==='Questions' && !goodText(item.why)) fail(label+': add an explanation.');
+    }
+  }
+  const byId=new Map(DATA.questions.map(q=>[q.id,q]));
+  for(const card of DATA.cards) {
+    if(card.sourceId==null) continue;
+    const linked=byId.get(String(card.sourceId));
+    if(!linked || linked.lesson!==card.lesson) fail('Flashcard '+card.id+': sourceId must match a quiz question in the same lesson.');
+  }
+} catch(error) {
+  $('study').textContent='Study data could not load. '+error.message+' Open the file in Notepad and check the editable Study Data section.';
+  $('study').classList.add('noscript','empty');
+  return;
+}
+const KEY=DATA.settings.deckId;
+const LESSONS=DATA.lessons;
+$('cardtotal').textContent=DATA.cards.length;
+$('quiztotal').textContent=DATA.questions.length;
+let saved={cards:{},quiz:{},stars:{}},canSave=true,mode='flash',session=[],index=0,revealed=false,results={},finished=false,committed=false;
+try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');if(raw&&typeof raw==='object'){for(const k of ['cards','quiz','stars'])if(raw[k]&&typeof raw[k]==='object'&&!Array.isArray(raw[k]))saved[k]=raw[k];}localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){canSave=false;}
+function persist(){if(canSave)try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){canSave=false;}storageStatus();}
+function storageStatus(){$('storage').textContent=canSave?'Progress saves in this browser.':'Progress is temporary here; browser storage is unavailable.';}
+function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function stats(){const known=DATA.cards.filter(c=>saved.cards[c.id]==='known').length;let total=0,right=0;for(const v of Object.values(saved.quiz)){total+=Number(v.attempts)||0;right+=Number(v.correct)||0;}$('known').textContent=known+' / '+DATA.cards.length;$('accuracy').textContent=total?Math.round(right/total*100)+'%':'—';$('reviewcount').textContent=DATA.questions.filter(q=>saved.quiz[q.id]?.last===false).length;}
+function topicId(x){return x.options?x.id:x.sourceId==null?'card:'+x.id:String(x.sourceId);}
+function start(){let items=mode==='flash'?DATA.cards:DATA.questions;const lesson=$('lesson').value,pool=$('pool').value;items=items.filter(x=>lesson==='all'||x.lesson===lesson).filter(x=>{const id=topicId(x);if(pool==='starred')return !!saved.stars[id];if(pool==='missed')return saved.quiz[id]?.last===false;if(pool==='needs')return mode==='flash'?saved.cards[x.id]!=='known':saved.quiz[id]?.last!==true;return true;});if($('shuffle').checked)items=shuffle(items);if($('length').value!=='all')items=items.slice(0,Number($('length').value));session=items.map(x=>({...x,options:x.options?shuffle(x.options):undefined}));index=0;revealed=false;results={};finished=false;committed=false;render();$('status').textContent='New '+(mode==='flash'?'flashcard':mode==='practice'?'multiple-choice':'practice test')+' session: '+session.length+' items.';}
+function setMode(m){mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));$('modehelp').textContent=m==='flash'?'Recall first, then reveal. Mark “Got it” or “Review again.”':m==='practice'?'Choose an answer for instant feedback. Options shuffle each session.':'Answer every question, then finish for your score. No feedback until submission.';start();}
+function source(x){
+  const q=x.options?x:DATA.questions.find(q=>q.id===String(x.sourceId));
+  if(!q || (!q.slide && !q.note))return '';
+  return '<details><summary>'+esc(DATA.settings.sourceLabel||'Source')+'</summary><p>'+esc(DATA.settings.itemLabel||'Item')+' '+esc(q.id)+' · '+esc(LESSONS[q.lesson])+'.'+(q.slide?'<br>'+esc(DATA.settings.referenceLabel||'Reference')+': '+esc(q.slide):'')+'</p>'+(q.note?'<p>'+esc(q.note)+'</p>':'')+'</details>';
+}
+function render(){stats();storageStatus();const el=$('study');if(!session.length){el.innerHTML='<div class="empty"><span class="pill">No matching items</span><h2>Try a different selection.</h2><p>Choose Everything or a different lesson, then start a new session. Items appear under Missed after an incorrect quiz answer.</p></div>';$('status').textContent='No items match these filters.';return;}if(finished){summary();return;}const x=session[index],qid=topicId(x),r=results[x.id];let body='<div class="topline"><span>'+esc(x.lesson)+' · '+esc(DATA.settings.itemLabel||'Item')+' '+esc(x.id)+'</span><button class="star" id="star" aria-label="'+(saved.stars[qid]?'Unstar':'Star')+' this topic" aria-pressed="'+!!saved.stars[qid]+'">'+(saved.stars[qid]?'★':'☆')+'</button></div><div class="cardbody"><div class="cardlabel">'+(mode==='flash'?'Recall before revealing':mode==='practice'?'Choose the best answer':'Practice test · feedback at the end')+'</div><h2 class="question">'+esc(x.q)+'</h2>';
+if(mode==='flash'){body+=revealed?'<div class="answer">'+esc(x.answer)+'</div>'+source(x)+'<div class="actions"><button id="again">Review again</button><button id="got" class="primary">Got it</button></div>':'<button id="reveal" class="primary">Reveal answer</button>';}
+else{body+='<div class="options">';x.options.forEach((o,i)=>{let cls='option';if(r){if(mode==='practice')cls+=o.correct?' correct':r.choice===i?' wrong':'';else if(r.choice===i)cls+=' selected';}body+='<button class="'+cls+'" data-choice="'+i+'" '+(r&&mode==='practice'?'disabled':'')+' aria-pressed="'+!!(r&&r.choice===i)+'"><span class="letter">'+String.fromCharCode(65+i)+'</span><span>'+esc(o.text)+'</span></button>';});body+='</div>';if(r&&mode==='practice')body+='<div class="feedback" role="status"><strong class="'+(r.correct?'good':'bad')+'">'+(r.correct?'Correct':'Not quite — the correct answer is highlighted.')+'</strong>'+esc(x.why)+'</div>'+source(x);}
+body+='</div><div class="footbar"><button id="prev" '+(index===0?'disabled':'')+'>← Previous</button><span class="counter">'+(index+1)+' of '+session.length+'</span><button id="next">'+(index===session.length-1?'Finish session':'Next →')+'</button></div><div class="progress" aria-hidden="true"><i style="width:'+((index+1)/session.length*100)+'%"></i></div>';el.innerHTML=body;
+$('star').onclick=()=>{saved.stars[qid]=!saved.stars[qid];persist();render();};$('prev').onclick=()=>move(-1);$('next').onclick=()=>move(1);if(mode==='flash'){if(revealed){$('again').onclick=()=>mark(false);$('got').onclick=()=>mark(true);}else $('reveal').onclick=()=>{revealed=true;render();$('status').textContent='Answer revealed. Compare it with your recall.';};}else document.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>choose(Number(b.dataset.choice)));
+}
+function record(id,correct){const old=saved.quiz[id]||{};saved.quiz[id]={attempts:(Number(old.attempts)||0)+1,correct:(Number(old.correct)||0)+(correct?1:0),last:correct};}
+function choose(i){const x=session[index];if(mode==='practice'&&results[x.id])return;results[x.id]={choice:i,correct:x.options[i].correct};if(mode==='practice'){record(x.id,x.options[i].correct);persist();}render();$('status').textContent=mode==='test'?'Answer recorded.':x.options[i].correct?'Correct.':'Review the explanation before continuing.';}
+function mark(known){const x=session[index];saved.cards[x.id]=known?'known':'review';results[x.id]={correct:known};persist();move(1);}
+function move(delta){if(delta>0&&index===session.length-1){const unanswered=session.filter(x=>!results[x.id]);if(mode==='test'&&unanswered.length){index=session.findIndex(x=>!results[x.id]);revealed=false;render();$('status').textContent='Answer the remaining '+unanswered.length+' question'+(unanswered.length===1?'':'s')+' before finishing.';return;}finished=true;if(mode==='test'&&!committed){for(const x of session)record(x.id,results[x.id].correct);committed=true;persist();}render();return;}index=Math.max(0,Math.min(session.length-1,index+delta));revealed=false;render();$('status').textContent='Item '+(index+1)+' of '+session.length+'.';}
+function summary(){const answered=session.filter(x=>results[x.id]),right=answered.filter(x=>results[x.id].correct),missed=answered.filter(x=>!results[x.id].correct);let html='<div class="result"><div class="eyebrow">Session complete</div><h2>'+(mode==='flash'?'Recall check':'Your practice results')+'</h2><div class="score">'+(mode==='flash'?right.length+' / '+session.length:answered.length?Math.round(right.length/answered.length*100)+'%':'—')+'</div><p>'+(mode==='flash'?right.length+' marked Got it; '+missed.length+' marked Review again; '+(session.length-answered.length)+' unmarked.':right.length+' correct out of '+answered.length+' answered; '+(session.length-answered.length)+' unanswered.')+'</p><p class="help">This is a study score, not an official passing standard.</p><div class="actions"><button class="primary" id="restart">New session</button>'+(missed.length?'<button id="retry">Review this session’s missed items</button>':'')+'</div>';
+if(mode!=='flash'){html+='<h3>Answer review</h3>';for(const x of session){const r=results[x.id];html+='<div class="reviewitem"><span class="pill">'+esc(x.lesson)+' · '+esc(DATA.settings.itemLabel||'Item')+' '+esc(x.id)+' · '+(!r?'Unanswered':r.correct?'Correct':'Review')+'</span><h3>'+esc(x.q)+'</h3>'+(r&&!r.correct?'<p class="bad">Your answer: '+esc(x.options[r.choice].text)+'</p>':'')+'<p><strong>Correct answer:</strong> '+esc(x.options.find(o=>o.correct).text)+'</p><p>'+esc(x.why)+'</p>'+source(x)+'</div>';}}
+html+='</div>';$('study').innerHTML=html;$('restart').onclick=start;if(missed.length)$('retry').onclick=()=>{session=shuffle(missed).map(x=>({...x,options:x.options?shuffle(x.options):undefined}));index=0;results={};revealed=false;finished=false;committed=false;render();$('status').textContent='Reviewing '+session.length+' missed items.';};stats();$('status').textContent='Session complete.';}
+for(const [value,text] of Object.entries(LESSONS)){const o=document.createElement('option');o.value=value;o.textContent=text;$('lesson').append(o);}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));$('start').onclick=start;$('reset').onclick=()=>$('resetdialog').showModal();$('cancelreset').onclick=()=>$('resetdialog').close();$('confirmreset').onclick=()=>{saved={cards:{},quiz:{},stars:{}};persist();$('resetdialog').close();start();$('status').textContent='Saved progress reset.';};
+document.addEventListener('keydown',e=>{if($('resetdialog').open||['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY','A'].includes(document.activeElement.tagName)||finished||!session.length)return;if(e.code==='Space'&&mode==='flash'&&!revealed){e.preventDefault();$('reveal').click();}else if(e.key==='ArrowRight'){e.preventDefault();move(1);}else if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}else if(mode!=='flash'&&/^[1-4]$/.test(e.key)){e.preventDefault();choose(Number(e.key)-1);}});
+setMode('flash');
+})();
+</script></body></html>
