@@ -6,10 +6,10 @@ A collection of browser-based study tools for Officer Candidate School (OCS). Th
 
 | Module | Status |
 | --- | --- |
-| Military History | First module developed. Includes flashcards, multiple-choice practice, and a practice test. |
+| Military History | Completed. First module developed. Includes flashcards, multiple-choice practice, and a practice test. Dark mode added|
 | Additional OCS topics | Planned. Each topic will use the same layout and controls as Military History. |
 | Cumulative Practice Test | Planned. Will draw from existing topic question banks and report an overall score and a score by topic. |
-|Additional Functions | Planned. Dark mode. |
+|Additional Functions | Completed. Dark mode. |
 
 ## How it will work
 
