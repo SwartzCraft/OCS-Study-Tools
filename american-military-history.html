@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>American Military History — Volumes I &amp; II | OCS Study Tools</title>
+  <style>
+    :root {
+      --paper: #f6f5ef;
+      --white: #fff;
+      --ink: #222b25;
+      --muted: #647067;
+      --green: #344d3a;
+      --pale: #e9eee5;
+      --line: #d9ded5;
+      --gold: #af863e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.55 system-ui, sans-serif;
+    }
+    .wrap { max-width: 1160px; margin: auto; padding: 26px 30px; }
+    header { padding: 25px 0 28px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      border-left: 3px solid var(--gold);
+      padding-left: 10px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    h1, h3 { font-family: Georgia, serif; font-weight: 500; }
+    h1 { font-size: clamp(36px, 7vw, 58px); line-height: 1.1; margin: 12px 0; }
+    h2 { font-size: 20px; margin: 26px 0 12px; }
+    h3 { font-size: 26px; line-height: 1.2; margin: 0; }
+    p { margin: 8px 0 0; }
+    .muted { color: var(--muted); }
+    .topics {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+      gap: 16px;
+    }
+    .topic {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 22px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: auto; padding-top: 18px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--green);
+      font-weight: 650;
+    }
+    .button:hover { background: var(--pale); }
+    .primary { background: var(--ocs-primary, var(--green)); color: #fff; border-color: var(--ocs-primary, var(--green)); text-decoration: none; }
+    .primary:hover { background: var(--ocs-primary-hover, #253d2b); }
+    a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+    .planned { margin-top: 24px; padding: 16px 20px; background: var(--pale); border-radius: 12px; }
+    .planned h2 { margin: 0; font-size: 16px; }
+    footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13px; }
+    @media (max-width: 760px) {
+      .wrap { padding: 20px 16px; }
+      header, .topic { padding-bottom: 20px; }
+    }
+  
+/* OCS branding and theme controls */
+header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+.ocs-insignia { display: block; flex: none; width: clamp(48px, 12vw, 72px); height: auto; border-radius: 12px; }
+.ocs-brand-copy { flex: 1 1 210px; min-width: 0; }
+.ocs-header-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ocs-theme-picker { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--muted); font-size: 13px; font-weight: 650; }
+.ocs-theme-picker[hidden] { display: none; }
+.ocs-theme-picker select { width: auto; min-height: 44px; padding: 6px 9px; font: inherit; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--ink); }
+.ocs-theme-picker select:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+:root[data-ocs-theme="dark"] {
+  color-scheme: dark;
+  --paper: #151b17; --white: #202923; --ink: #edf1ec; --muted: #b5c1b6;
+  --green: #b8d6b9; --pale: #2d3c32; --line: #536359; --gold: #e4bc65;
+  --bad: #ffb2a9; --ocs-hover: #304037; --ocs-primary: #31563c;
+  --ocs-primary-hover: #3b6547; --ocs-correct: #253c2b; --ocs-wrong: #462a29;
+  --ocs-good: #b2dda9; --ocs-correct-line: #83be8d; --ocs-wrong-line: #de948b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-ocs-theme]) {
+  color-scheme: dark;
+  --paper: #151b17; --white: #202923; --ink: #edf1ec; --muted: #b5c1b6;
+  --green: #b8d6b9; --pale: #2d3c32; --line: #536359; --gold: #e4bc65;
+  --bad: #ffb2a9; --ocs-hover: #304037; --ocs-primary: #31563c;
+  --ocs-primary-hover: #3b6547; --ocs-correct: #253c2b; --ocs-wrong: #462a29;
+  --ocs-good: #b2dda9; --ocs-correct-line: #83be8d; --ocs-wrong-line: #de948b;
+}
+}
+</style>
+<script id="ocs-theme-init">
+(() => {
+  const key = 'ocs-study-tools-theme';
+  const root = document.documentElement;
+  let theme = 'system';
+  try { theme = localStorage.getItem(key) || 'system'; } catch (_) {}
+  const apply = (value) => {
+    theme = ['system', 'light', 'dark'].includes(value) ? value : 'system';
+    if (theme === 'system') root.removeAttribute('data-ocs-theme');
+    else root.setAttribute('data-ocs-theme', theme);
+  };
+  apply(theme);
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('ocs-theme');
+    select.value = theme;
+    select.parentElement.hidden = false;
+    select.addEventListener('change', () => {
+      apply(select.value);
+      try { localStorage.setItem(key, theme); } catch (_) {}
+    });
+    window.addEventListener('storage', (event) => {
+      if (event.key === key || event.key === null) {
+        apply(event.newValue);
+        select.value = theme;
+      }
+    });
+  });
+})();
+</script>
+
+<style>
+  .hub-link { display: inline-block; padding: 8px 0; color: var(--green); }
+  .modes, .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  button { font: inherit; cursor: pointer; background: var(--white); }
+  button:focus-visible, select:focus-visible, #prompt:focus-visible {
+    outline: 3px solid var(--gold); outline-offset: 3px;
+  }
+  button:disabled { opacity: .5; cursor: default; }
+  .chapter-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .chapter-picker[hidden], [hidden] { display: none; }
+  .chapter-picker select { font: inherit; color: var(--ink); background: var(--white);
+    padding: 8px 10px; min-height: 44px; border: 1px solid var(--line); border-radius: 9px; }
+  .card { margin-top: 18px; padding: clamp(16px, 4vw, 28px); background: var(--white);
+    border: 1px solid var(--line); border-radius: 14px; }
+  .card p, .card li { max-width: 72ch; }
+  #prompt { margin: 10px 0 16px; font-family: Georgia, serif; font-weight: 500; font-size: 25px; }
+  #answer { border-top: 1px solid var(--line); padding-top: 14px; }
+  #answer-label { font-weight: 700; }
+  #points { padding-left: 22px; }
+  #points li + li { margin-top: 6px; }
+  #source { color: var(--muted); font-size: 14px; }
+  #reveal { margin-top: 14px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="ocs-header">
+    <img class="ocs-insignia" width="72" height="72" alt="Officer Candidate School insignia" src="data:image/webp;base64,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">
+    <div class="ocs-brand-copy">
+      <div class="eyebrow">OCS Study Tools · Reading Companion</div>
+      <h1>American Military History</h1>
+      <p class="muted">Volumes I &amp; II · Chapter review and historical comparisons</p>
+    </div>
+    <label class="ocs-theme-picker" hidden>Theme
+  <select id="ocs-theme">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</label>
+  </header>
+  <main>
+    <p id="hub-nav" hidden><a class="hub-link" href="./index.html">← Back to Study Hub</a></p>
+    <p class="muted">Current coverage: Volume I, Chapters 1–2, plus selected exercises from across both volumes. Built from independent study notes to supplement the assigned readings and instructor-provided POI.</p>
+    <noscript><p>Enable JavaScript in a browser to use this offline study page.</p></noscript>
+
+    <div id="tool" hidden>
+      <div class="modes" role="group" aria-label="Study mode">
+        <button type="button" class="button primary" data-mode="chapters" aria-pressed="true">Chapter Review</button>
+        <button type="button" class="button" data-mode="recall" aria-pressed="false">Recall &amp; Compare</button>
+        <button type="button" class="button" data-mode="mixups" aria-pressed="false">Common Mix-Ups</button>
+      </div>
+      <p id="instructions" class="muted"></p>
+      <label id="chapter-picker" class="chapter-picker">
+        Scope <select id="chapter"></select>
+      </label>
+      <section class="card" aria-labelledby="prompt">
+        <div id="position" class="eyebrow"></div>
+        <h2 id="prompt" tabindex="-1"></h2>
+        <div id="answer" hidden>
+          <div id="answer-label" tabindex="-1"></div>
+          <ul id="points"></ul>
+          <p id="source"></p>
+        </div>
+        <button type="button" id="reveal" class="button primary" aria-controls="answer" aria-expanded="false">Reveal answer</button>
+      </section>
+      <div class="controls">
+        <button type="button" id="previous" class="button">Previous</button>
+        <button type="button" id="next" class="button">Next</button>
+      </div>
+    </div>
+  </main>
+  <footer class="muted">
+    <p>Independent study aid based on the assigned <cite>American Military History</cite> volumes and companion study notes. Page references are to the printed books. Follow assigned readings and cadre guidance for course requirements.</p>
+  </footer>
+</div>
+
+<!-- EDIT STUDY DATA: Add chapters under "chapters"; set each new chapter's "id" to a unique value.
+     Cards use prompt, points (one or more answer lines), and source (printed book pages or chapters). Recall cards can also include a direction label.
+     Copy a whole row when adding a card. Keep commas between rows and use double quotes. -->
+<script type="application/json" id="study-data">
+{
+  "chapters": [
+    {
+      "id": "v1-ch1",
+      "title": "Volume I · Chapter 1: Introduction",
+      "cards": [
+        {"prompt":"What does military history study?","points":["War, military institutions, and soldiers in their political, economic, technological, and social setting. It includes periods of peace as well as conflict."],"source":"Volume I, pp. 1–3"},
+        {"prompt":"What distinguishes limited war from total war?","points":["Limited wars pursue restricted objectives. Total war draws much more extensively on society and its resources.","The political purpose helps explain the scale of the effort."],"source":"Volume I, pp. 2–3"},
+        {"prompt":"What happened in 1775, 1778, and 1974 in the history of the Army Seal?","points":["1775: The Army was established.","1778: The seal first authenticated Revolutionary documents.","1974: The seal was revised to read Department of the Army instead of War Office and show 1775."],"source":"Volume I, p. 4"},
+        {"prompt":"How have the Army and American society shaped each other?","points":["Technology, recruitment, civilian relations, and national culture influence the Army.","The Army has contributed to engineering, exploration, medicine, and social change."],"source":"Volume I, pp. 4–5"},
+        {"prompt":"What are the “two armies” in American military history?","points":["Professional regulars alongside citizen forces such as militia, volunteers, Guard, reserves, and conscripts."],"source":"Volume I, p. 5"},
+        {"prompt":"Why does the chapter describe war as both art and science?","points":["Some physical effects can be calculated. Human behavior and uncertainty still require judgment."],"source":"Volume I, p. 6"},
+        {"prompt":"What are the nine principles listed in Chapter 1?","points":["Objective, offensive, maneuver, mass, economy of force, unity of command, security, surprise, and simplicity.","The chapter presents them as guides for judgment. Context still matters."],"source":"Volume I, pp. 7–12"},
+        {"prompt":"What is the difference between grand strategy, strategy, operational art, and tactics?","points":["Grand strategy draws on national or coalition resources, including political and economic means.","Strategy directs campaigns toward larger objectives. Operational art links major operations to those objectives. Tactics concerns the use of forces in battle."],"source":"Volume I, pp. 12–13"},
+        {"prompt":"How did campaign honors evolve before the Army Flag was adopted?","points":["Silver rings were introduced in 1890 and campaign streamers in 1920. The Army Flag was adopted in 1956 to represent the entire service."],"source":"Volume I, p. 8"},
+        {"prompt":"What does logistics cover, and what are lines of communications?","points":["Logistics concerns moving and sustaining forces. Lines of communications connect forces with their sources of supply and reinforcement."],"source":"Volume I, p. 13"}
+      ]
+    },
+    {
+      "id": "v1-ch2",
+      "title": "Volume I · Chapter 2: The Beginnings",
+      "cards": [
+        {"prompt":"What did Greek and Roman military organization contribute to the European inheritance?","points":["Alexander combined infantry and cavalry. Roman legions were noted for their flexibility, engineering, and siege capabilities. Both examples show the importance of organization alongside weapons."],"source":"Volume I, pp. 19–20"},
+        {"prompt":"What did Henry II’s 1181 Assize of Arms require, and what earlier tradition influenced the English militia?","points":["The Assize reinforced the obligation of freemen to possess arms. The Saxon fyrd was an earlier tradition of local military obligation."],"source":"Volume I, p. 20"},
+        {"prompt":"What changed during the European Military Revolution of the sixteenth and seventeenth centuries?","points":["Armies grew, supply systems expanded, and states relied increasingly on firearms, drill, and improved fortifications. These changes increased both military capacity and the resources required to sustain it."],"source":"Volume I, pp. 21–22"},
+        {"prompt":"When was the Thirty Years’ War, and how did its aftermath influence European warfare?","points":["1618–1648. Gustavus Adolphus integrated infantry, cavalry, and artillery. The devastation helped encourage a later preference for more limited warfare fought by professional armies."],"source":"Volume I, p. 22"},
+        {"prompt":"Why was the socket bayonet an organizational change as well as a weapons change?","points":["Musketeers could defend themselves against cavalry without relying on separate pikemen. That allowed armies to rely more heavily on muskets within the same formation."],"source":"Volume I, pp. 22–25"},
+        {"prompt":"What features characterized professional European armies in the eighteenth century?","points":["Officers often came from the upper classes. Long enlisted service, strict discipline, seasonal campaigning, and established supply magazines shaped these forces."],"source":"Volume I, pp. 23–24"},
+        {"prompt":"How did the Brown Bess and the Pennsylvania rifle differ?","points":["The Brown Bess was a smoothbore flintlock that could fire about three rounds per minute at best. The Pennsylvania rifle offered greater accuracy and range but loaded more slowly and generally lacked a standard bayonet."],"source":"Volume I, p. 24 and pp. 40–41"},
+        {"prompt":"Why could supply, disease, and time matter as much as fortifications in a siege?","points":["A siege could last long enough for sickness or shortages to undermine either side. Vauban’s system illustrates how specialized engineering shaped the process."],"source":"Volume I, pp. 26–27"},
+        {"prompt":"How did North American terrain and colonial government shape warfare?","points":["Forests and frontier conditions encouraged adaptations to conventional European methods. Colonial assemblies controlled military funding, so local political decisions also shaped what forces could do."],"source":"Volume I, pp. 28–30"},
+        {"prompt":"What did the colonial militia provide, and where did it fall short?","points":["Militia service was generally compulsory for free males from 16 to 60, though rules varied. The militia provided local defense and a recruitment base; readiness, training, and length of service varied."],"source":"Volume I, pp. 30–32"},
+        {"prompt":"Why is 13 December 1636 recognized as the National Guard’s birthday?","points":["Massachusetts organized its militia companies into three regiments on that date."],"source":"Volume I, p. 31"},
+        {"prompt":"What does the 1739 South Carolina uprising reveal about the militia’s domestic role?","points":["The militia was involved in suppressing resistance by enslaved people. Local military forces served purposes beyond frontier defense."],"source":"Volume I, p. 32"},
+        {"prompt":"Which four colonial wars corresponded to wider European conflicts?","points":["King William’s War, Queen Anne’s War, King George’s War, and the French and Indian War. Together they span a period from 1689 to 1763."],"source":"Volume I, p. 32"},
+        {"prompt":"What happened to Louisbourg in 1745 and 1748, and why does the distinction matter?","points":["Colonial forces captured it in 1745. It was returned to France in 1748, illustrating how wider diplomatic priorities could reverse a local victory."],"source":"Volume I, pp. 34–35"},
+        {"prompt":"What happened at Fort Necessity, and where does it fit in the wider war?","points":["In 1754, Washington’s Virginia expedition challenged French control in the Ohio country but ended in surrender. Fighting in North America preceded the European Seven Years’ War."],"source":"Volume I, pp. 35–36"},
+        {"prompt":"When and where was Braddock defeated, and what difficulty did the event expose?","points":["9 July 1755, near the Monongahela. The British force’s confused response in woodland fighting exposed the limits of methods ill suited to local conditions."],"source":"Volume I, pp. 36–38"},
+        {"prompt":"What contributed to Britain’s recovery from 1757 to 1759?","points":["Pitt’s funding, regulars, naval power, colonial support, and light troops all played roles. Louisbourg fell in 1758 and Quebec in 1759."],"source":"Volume I, pp. 38–40"},
+        {"prompt":"What happened at Quebec on 13 September 1759?","points":["Wolfe’s troops defeated Montcalm’s on the Plains of Abraham, showing that disciplined conventional forces could succeed under suitable conditions."],"source":"Volume I, p. 39"},
+        {"prompt":"Which logistical conditions constrained armies in colonial North America?","points":["Poor roads, great distances, and dependence on imported supplies limited army size and heavy equipment. Waterways often made transportation more efficient."],"source":"Volume I, pp. 39–40"},
+        {"prompt":"Which features of the colonial military experience carried into later American policy?","points":["Reliance on citizen forces and temporary volunteers, local independence, distrust of standing armies, and civilian supremacy helped shape later policy."],"source":"Volume I, pp. 41–42"}
+      ]
+    }
+  ],
+  "recall": [
+    {"direction":"Specific → General","prompt":"Braddock was defeated near the Monongahela in 1755. Four years later, British regulars won on the Plains of Abraham. What broader claim do these outcomes support together?","points":["Colonial warfare did not favor one method in every setting. What worked depended on the terrain, the opposing force, and the circumstances of the engagement.","The Monongahela illustrates the cost of failing to adapt to the conditions. Quebec shows that disciplined conventional forces could still succeed under suitable conditions."],"source":"Volume I, pp. 36–39"},
+    {"direction":"General → Specific","prompt":"Conventional methods could still succeed in colonial North America when conditions suited them. Which engagement supports that claim, and what makes it a useful example?","points":["Quebec, 13 September 1759: Wolfe’s disciplined troops defeated Montcalm on the Plains of Abraham.","Explain why the example fits: a conventional engagement on open ground contrasts with Braddock’s defeat in woodland conditions. This supports a conditional claim rather than a rule about all colonial warfare."],"source":"Volume I, pp. 36–39"},
+    {"prompt":"Colonial forces captured Louisbourg in 1745, but it went back to France in 1748. What does this show about the relationship between military success and political outcomes?","points":["Winning a local military objective does not guarantee keeping the gain. The wider diplomatic settlement determined what happened to Louisbourg.","Connect this to Chapter 1: political goals shape how military results are used."],"source":"Volume I, pp. 12–13 and 34–35","direction":"Specific → General"},
+    {"prompt":"A local victory can be reversed by a wider diplomatic settlement. Which example from Chapter 2 supports that claim, and what sequence makes it convincing?","points":["Louisbourg: colonial forces captured the fortress in 1745, but it was returned to France in 1748. The capture and the later settlement are distinct events."],"source":"Volume I, pp. 34–35","direction":"General → Specific"},
+    {"prompt":"Citizen and professional forces: How do militia, volunteers, regulars, conscripts, Guard, and reserves differ?","points":["Separate recruitment categories (volunteers and conscripts) from institutions or components (regulars, militia, Guard, and reserves). The categories can overlap.","Compare what each could provide in a given era: standing experience, local manpower, or the ability to expand the Army.","Explain a recurring tradeoff, such as how quickly forces can mobilize versus how much training or integration they still need."],"source":"Volume I, Chapters 2, 5, 13, and 16; Volume II, Chapters 2 and 12"},
+    {"direction":"Specific → General","prompt":"Early campaigns in 1812, mobilization in 1898, and Task Force Smith in 1950 exposed different weaknesses. What broader readiness lesson connects them?","points":["1812: The small regular force and inexperienced troops limited readiness for early campaigns.","1898: Rapid expansion strained equipment, transport, and camp administration.","1950: The first U.S. ground troops sent into action faced a readiness and equipment gap.","Shared lesson: fielding a force quickly does not guarantee that it has the training, equipment, or support it needs. Identify which shortfall mattered in each case."],"source":"Volume I, Chapters 6 and 15; Volume II, Chapter 8"},
+    {"direction":"General → Specific","prompt":"Recruiting more soldiers does not automatically give an army the capacity to equip, move, and support them. Which example from the readings best illustrates that problem, and why?","points":["The 1898 mobilization is a strong example: the force expanded rapidly, and equipment, transportation, and camp administration came under strain.","A different example can work if you explain the link between growth or deployment and a specific shortfall. Naming an event alone is incomplete."],"source":"Volume I, Chapter 15"},
+    {"prompt":"Saratoga and Yorktown: How did each outcome contribute to American independence?","points":["Saratoga (1777) helped secure the French alliance.","Yorktown (1781) ended in Cornwallis’s surrender. French naval and ground support helped make that outcome possible.","Distinguish the surrender at Yorktown from formal recognition of independence in 1783."],"source":"Volume I, Chapters 4–5"}
+  ],
+  "mixups": [
+    {"prompt":"What began in 1754 in North America, and what began in 1756 in Europe?","points":["The French and Indian War began in North America in 1754. The wider European Seven Years’ War began in 1756."],"source":"Volume I, pp. 32–36"},
+    {"prompt":"Louisbourg: distinguish its first capture, return to France, and later capture.","points":["Captured by colonial forces in 1745, returned to France in 1748, and captured again by Britain in 1758."],"source":"Volume I, pp. 34–35 and 38–40"},
+    {"prompt":"Which came first: the Treaty of Ghent or the Battle of New Orleans?","points":["The treaty was signed on 24 December 1814. The battle was fought on 8 January 1815 before word of the signing reached the forces."],"source":"Volume I, pp. 153–155"},
+    {"prompt":"Which ended on 3 July 1863, and which surrendered on 4 July?","points":["Gettysburg ended on 3 July. Vicksburg surrendered on 4 July."],"source":"Volume I, Chapters 11–12"},
+    {"prompt":"How do the 1953 Korean armistice, U.S. withdrawal from Vietnam, and the fall of Saigon differ?","points":["The Korean armistice stopped fighting in 1953 without a final peace treaty.","U.S. withdrawal from Vietnam in 1973 preceded the fall of Saigon in 1975."],"source":"Volume II, Chapters 8 and 11"}
+  ]
+}
+</script>
+
+<script>
+(() => {
+  const get = id => document.getElementById(id);
+  const data = JSON.parse(get('study-data').textContent);
+  const nav = get('hub-nav');
+  nav.hidden = !/^https?:$/.test(location.protocol);
+  const modes = Array.from(document.querySelectorAll('[data-mode]'));
+  const chapter = get('chapter');
+  const prompts = {
+    chapters: 'Say the key facts first, then reveal the answer and printed source.',
+    recall: 'Work both ways: draw a broader lesson from specific events, then use a specific example to support a broader claim. Answer aloud or in writing before revealing the checklist.',
+    mixups: 'Recall the order or distinction before revealing the answer.'
+  };
+  let mode = 'chapters';
+  let position = 0;
+  for (const entry of data.chapters) {
+    const option = document.createElement('option');
+    option.value = entry.id;
+    option.textContent = entry.title;
+    chapter.append(option);
+  }
+  // Interleave the chapters in the mixed scope without copying their cards.
+  const mixed = [];
+  const longest = Math.max(...data.chapters.map(entry => entry.cards.length));
+  for (let i = 0; i < longest; i++) {
+    for (const entry of data.chapters) {
+      if (entry.cards[i]) mixed.push(entry.cards[i]);
+    }
+  }
+  if (data.chapters.length > 1) {
+    const option = document.createElement('option');
+    option.value = 'all-listed-chapters';
+    option.textContent = 'Mixed Review · All Available Chapters';
+    chapter.append(option);
+  }
+  const cards = () => mode !== 'chapters' ? data[mode]
+    : chapter.value === 'all-listed-chapters' ? mixed
+    : (data.chapters.find(entry => entry.id === chapter.value) || data.chapters[0]).cards;
+  function render(moveFocus = false) {
+    const items = cards();
+    const item = items[position];
+    get('chapter-picker').hidden = mode !== 'chapters';
+    get('instructions').textContent = prompts[mode];
+    get('position').textContent = (position + 1) + ' of ' + items.length + (item.direction ? ' · ' + item.direction : '');
+    get('prompt').textContent = item.prompt;
+    get('answer').hidden = true;
+    get('answer-label').textContent = mode === 'recall' ? 'Check your answer' : 'Answer';
+    const points = get('points');
+    points.replaceChildren();
+    for (const point of item.points) {
+      const li = document.createElement('li');
+      li.textContent = point;
+      points.append(li);
+    }
+    get('source').textContent = 'Source: ' + item.source;
+    get('reveal').textContent = mode === 'recall' ? 'Reveal checklist' : 'Reveal answer';
+    get('reveal').setAttribute('aria-expanded', 'false');
+    get('previous').disabled = position === 0;
+    get('next').disabled = position === items.length - 1;
+    if (moveFocus) get('prompt').focus();
+  }
+  for (const button of modes) {
+    button.addEventListener('click', () => {
+      if (mode === button.dataset.mode) return;
+      mode = button.dataset.mode;
+      position = 0;
+      for (const tab of modes) {
+        const selected = tab === button;
+        tab.setAttribute('aria-pressed', String(selected));
+        tab.classList.toggle('primary', selected);
+      }
+      render(true);
+    });
+  }
+  chapter.addEventListener('change', () => { position = 0; render(true); });
+  get('previous').addEventListener('click', () => { if (position > 0) { position--; render(true); } });
+  get('next').addEventListener('click', () => { if (position + 1 < cards().length) { position++; render(true); } });
+  get('reveal').addEventListener('click', () => {
+    const answer = get('answer');
+    answer.hidden = !answer.hidden;
+    get('reveal').setAttribute('aria-expanded', String(!answer.hidden));
+    get('reveal').textContent = answer.hidden
+      ? (mode === 'recall' ? 'Reveal checklist' : 'Reveal answer')
+      : (mode === 'recall' ? 'Hide checklist' : 'Hide answer');
+    if (!answer.hidden) get('answer-label').focus();
+  });
+  get('tool').hidden = false;
+  render();
+})();
+</script>
+</body>
+</html>
