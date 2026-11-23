@@ -26,3 +26,8 @@ Each topic uses the same template, with labeled sections for the title, lessons,
 Suggestions from candidates and cadre are welcome. For a content correction, include the topic, the question or card, the suggested change, and a source or page reference if available.
 
 Created and maintained by Brandon Swartz. This is a supplemental study aid. Use the assigned readings and cadre guidance as the authority for course requirements.
+
+## Project maintenance
+
+- [Changelog](./CHANGELOG.md) — what changed for candidates.
+- [Maintainer guide](./MAINTAINING.md) — page names and how to review, publish, and verify updates.
