@@ -1,7 +1,7 @@
 # OCS_Study_Tools
-Officer Candidate School Study Tools 
-(https://swartzcraft.github.io/OCS-Study-Tools/)
-A collection of browser-based study tools for Officer Candidate School (OCS). The goal is to give candidates one place to review course topics and give cadre study materials they can maintain with a text editor.
+### Officer Candidate School Study Tools 
+#### (https://swartzcraft.github.io/OCS-Study-Tools/)
+#### A collection of browser-based study tools for Officer Candidate School (OCS). The goal is to give candidates one place to review course topics and give cadre study materials they can maintain with a text editor.
 
 ## Study modules
 
