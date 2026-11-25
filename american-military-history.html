@@ -147,6 +147,10 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
   button:disabled { opacity: .5; cursor: default; }
   .chapter-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .chapter-picker[hidden], [hidden] { display: none; }
+  .order-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 8px; }
+  .shuffle-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; }
+  .shuffle-toggle input { accent-color: var(--green); width: 18px; height: 18px; }
+  .order-controls .button[hidden] { display: none; }
   .chapter-picker select { font: inherit; color: var(--ink); background: var(--white);
     padding: 8px 10px; min-height: 44px; border: 1px solid var(--line); border-radius: 9px; }
   .card { margin-top: 18px; padding: clamp(16px, 4vw, 28px); background: var(--white);
@@ -194,6 +198,11 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
       <label id="chapter-picker" class="chapter-picker">
         Scope <select id="chapter"></select>
       </label>
+      <div class="order-controls">
+        <label class="shuffle-toggle"><input type="checkbox" id="shuffle" aria-describedby="shuffle-help" autocomplete="off"> Shuffle cards</label>
+        <button type="button" id="reshuffle" class="button" hidden>Reshuffle</button>
+      </div>
+      <p id="shuffle-help" class="muted">Changing the order starts this review again at card 1.</p>
       <section class="card" aria-labelledby="prompt">
         <div id="position" class="eyebrow"></div>
         <h2 id="prompt" tabindex="-1"></h2>
@@ -573,6 +582,8 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
   nav.hidden = !/^https?:$/.test(location.protocol);
   const modes = Array.from(document.querySelectorAll('[data-mode]'));
   const chapter = get('chapter');
+  const shuffleToggle = get('shuffle');
+  const reshuffle = get('reshuffle');
   const prompts = {
     chapters: 'Say the key facts first, then reveal the answer and printed source.',
     recall: 'Work both ways: draw a broader lesson from specific events, then use a specific example to support a broader claim. Answer aloud or in writing before revealing the checklist.',
@@ -600,11 +611,27 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
     option.textContent = 'Mixed Review · All Available Chapters';
     chapter.append(option);
   }
-  const cards = () => mode !== 'chapters' ? data[mode]
+  const scopedCards = () => mode !== 'chapters' ? data[mode]
     : chapter.value === 'all-listed-chapters' ? mixed
     : (data.chapters.find(entry => entry.id === chapter.value) || data.chapters[0]).cards;
+  // A session owns its order. Navigation never shuffles the source arrays.
+  let items = [];
+  function shuffle(items) {
+    const result = [...items];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+  function startReview(moveFocus = false) {
+    const source = scopedCards();
+    items = shuffleToggle.checked ? shuffle(source) : source;
+    position = 0;
+    reshuffle.hidden = !shuffleToggle.checked;
+    render(moveFocus);
+  }
   function render(moveFocus = false) {
-    const items = cards();
     const item = items[position];
     get('chapter-picker').hidden = mode !== 'chapters';
     get('instructions').textContent = prompts[mode];
@@ -630,18 +657,19 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
     button.addEventListener('click', () => {
       if (mode === button.dataset.mode) return;
       mode = button.dataset.mode;
-      position = 0;
       for (const tab of modes) {
         const selected = tab === button;
         tab.setAttribute('aria-pressed', String(selected));
         tab.classList.toggle('primary', selected);
       }
-      render(true);
+      startReview(true);
     });
   }
-  chapter.addEventListener('change', () => { position = 0; render(true); });
+  chapter.addEventListener('change', () => startReview(true));
+  shuffleToggle.addEventListener('change', () => startReview());
+  reshuffle.addEventListener('click', () => startReview(true));
   get('previous').addEventListener('click', () => { if (position > 0) { position--; render(true); } });
-  get('next').addEventListener('click', () => { if (position + 1 < cards().length) { position++; render(true); } });
+  get('next').addEventListener('click', () => { if (position + 1 < items.length) { position++; render(true); } });
   get('reveal').addEventListener('click', () => {
     const answer = get('answer');
     answer.hidden = !answer.hidden;
@@ -652,7 +680,7 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
     if (!answer.hidden) get('answer-label').focus();
   });
   get('tool').hidden = false;
-  render();
+  startReview();
 })();
 </script>
 </body>
