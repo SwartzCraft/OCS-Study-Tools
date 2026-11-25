@@ -9,7 +9,7 @@ Independent, browser-based study tools for Officer Candidate School (OCS). Pract
 | Study tool | What it covers |
 | --- | --- |
 | [POI Study](https://swartzcraft.github.io/OCS-Study-Tools/military-history.html) | Military history review aligned to the instructor-provided program of instruction (POI), with flashcards, multiple-choice practice, and a practice test. |
-| [American Military History Reading Companion](https://swartzcraft.github.io/OCS-Study-Tools/american-military-history.html) | Volume I, Chapters 1–6, with chapter selection and mixed review. Includes Recall & Compare and Common Mix-Ups exercises, with printed source references. |
+| [American Military History Reading Companion](https://swartzcraft.github.io/OCS-Study-Tools/american-military-history.html) | Volume I with chapter selection and mixed review. Includes Recall & Compare and Common Mix-Ups exercises, with printed source references. |
 
 ## How to use it
 
