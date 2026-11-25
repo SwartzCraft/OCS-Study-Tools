@@ -19,7 +19,7 @@ These tools supplement the assigned readings and instructor-provided materials. 
 
 ## What’s planned
 
-- Remaining Volume I chapters and Volume II chapter review.
+- Remaining Volume II chapter review.
 - Additional OCS subjects and a cumulative practice test as more modules become available.
 
 Follow [Issues](https://github.com/SwartzCraft/OCS-Study-Tools/issues) for work in progress.
