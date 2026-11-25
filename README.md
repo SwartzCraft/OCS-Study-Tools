@@ -1,34 +1,38 @@
-# OCS_Study_Tools
-### Officer Candidate School Study Tools 
-#### (https://swartzcraft.github.io/OCS-Study-Tools/)
-#### A collection of browser-based study tools for Officer Candidate School (OCS). The goal is to give candidates one place to review course topics and give cadre study materials they can maintain with a text editor.
+# OCS Study Tools
 
-## Study modules
+**[Open the live Study Hub](https://swartzcraft.github.io/OCS-Study-Tools/)**
 
-| Module | Status |
+Independent, browser-based study tools for Officer Candidate School (OCS). Practice online or download a standalone HTML copy to study offline. The tools support light, dark, and system themes.
+
+## Available now
+
+| Study tool | What it covers |
 | --- | --- |
-| Military History | Completed. First module developed. Includes flashcards, multiple-choice practice, and a practice test. Dark mode added|
-| Additional OCS topics | Planned. Each topic will use the same layout and controls as Military History. |
-| Cumulative Practice Test | Planned. Will draw from existing topic question banks and report an overall score and a score by topic. |
-|Additional Functions | Completed. Dark mode. |
+| [POI Study](https://swartzcraft.github.io/OCS-Study-Tools/military-history.html) | Military history review aligned to the instructor-provided program of instruction (POI), with flashcards, multiple-choice practice, and a practice test. |
+| [American Military History Reading Companion](https://swartzcraft.github.io/OCS-Study-Tools/american-military-history.html) | Volume I, Chapters 1–6, with chapter selection and mixed review. Includes Recall & Compare and Common Mix-Ups exercises, with printed source references. |
 
-## How it will work
+## How to use it
 
-The home page will link to each study module. Candidates will be able to open the hub on a phone or computer through GitHub Pages.
+Open the [Military History page](https://swartzcraft.github.io/OCS-Study-Tools/history.html) and choose a study tool. To study offline, use its **Download** button and open the saved HTML file in a desktop browser.
 
-Each topic will also be available as a standalone HTML file. Once downloaded, it can be opened in a desktop browser without an internet connection.
+These tools supplement the assigned readings and instructor-provided materials. Follow cadre guidance for course requirements.
 
-## Maintenance
+## What’s planned
 
-Each topic uses the same template, with labeled sections for the title, lessons, questions, answers, and sources. To update a topic, make a backup, edit the labeled sections in Notepad, and open the saved file in a browser to check the changes before sharing it.
+- Remaining Volume I chapters and Volume II chapter review.
+- Additional OCS subjects and a cumulative practice test as more modules become available.
 
-## Feedback
+Follow [Issues](https://github.com/SwartzCraft/OCS-Study-Tools/issues) for work in progress.
 
-Suggestions from candidates and cadre are welcome. For a content correction, include the topic, the question or card, the suggested change, and a source or page reference if available.
+## Questions and corrections
 
-Created and maintained by Brandon Swartz. This is a supplemental study aid. Use the assigned readings and cadre guidance as the authority for course requirements.
+- Use [Discussions](https://github.com/SwartzCraft/OCS-Study-Tools/discussions) for questions, study tips, and suggestions.
+- Use [Issues](https://github.com/SwartzCraft/OCS-Study-Tools/issues/new/choose) for reproducible bugs or specific content corrections. For a correction, include the tool, chapter or card, and a source or printed page if available.
+- Follow the [Code of Conduct](./CODE_OF_CONDUCT.md). Keep personal information, restricted materials, and actual exam questions out of public posts.
 
 ## Project maintenance
 
 - [Changelog](./CHANGELOG.md) — what changed for candidates.
 - [Maintainer guide](./MAINTAINING.md) — page names and how to review, publish, and verify updates.
+
+Created and maintained by Brandon Swartz.
