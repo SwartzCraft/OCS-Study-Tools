@@ -10,3 +10,8 @@ Record changes that matter to candidates. Move shipped entries from Unreleased t
 - Added the instructor-aligned POI Study and the independent Reading Companion.
 - The Reading Companion covers Volume I, Chapters 1–2, with chapter and mixed review, Recall & Compare, and Common Mix-Ups.
 - Both study tools are available as standalone HTML downloads.
+
+## Added
+
+- AMH-V1-Chapters 3-16 and the epilogue completed. Mixed review now includes 194 chapter cards.
+- AMH, added optional Shuffle and Reshuffle controls to the AMH Reading Companion. Shuffle off by default
