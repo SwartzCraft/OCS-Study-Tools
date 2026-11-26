@@ -4,6 +4,9 @@ Record changes that matter to candidates. Move shipped entries from Unreleased t
 
 ## Unreleased
 
+- UCMJ content
+- OC Guide content
+
 ## Initial published baseline
 
 - Added the OCS Study Hub and the Military History landing page.
@@ -14,4 +17,8 @@ Record changes that matter to candidates. Move shipped entries from Unreleased t
 ## Added
 
 - AMH-V1-Chapters 3-16 and the epilogue completed. Mixed review now includes 194 chapter cards.
-- AMH, added optional Shuffle and Reshuffle controls to the AMH Reading Companion. Shuffle off by default
+- AMH, added optional Shuffle and Reshuffle controls to the AMH Reading Companion. Shuffle off by default.
+- AMH, Additional temporary tile added until scheduled merger.
+- Index, Expansion of tiles - now extensions past tiles.
+- AMH-V2, final volume worth of personalized study material.
+- History, content corrections to reflect new materials.
