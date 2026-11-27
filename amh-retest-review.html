@@ -170,6 +170,11 @@ header.ocs-header { display: flex; flex-wrap: wrap; align-items: center; gap: 14
 .quiz-options { display:grid; gap:8px; margin: 0 0 16px; }
 .quiz-options label { display:flex; gap:10px; align-items:baseline; border:1px solid var(--line); border-radius:8px; padding:10px; cursor:pointer; overflow-wrap:anywhere; }
 .quiz-options label:focus-within { outline:2px solid var(--gold); outline-offset:2px; }
+.quiz-options[hidden] { display:none; }
+.test-controls { display:flex; flex-wrap:wrap; gap:8px 18px; }
+.test-controls[hidden] { display:none; }
+.test-result { border-top:1px solid var(--line); padding:10px 0; }
+.test-result summary { cursor:pointer; }
 fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
 #score { margin:8px 0; }
 #result { font-weight:700; }
@@ -181,7 +186,7 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
     <div class="ocs-brand-copy">
       <div class="eyebrow">OCS Study Tools · Retest Review</div>
       <h1>American Military History Retest Review</h1>
-      <p class="muted">Lesson flashcards and two separate practice guides</p>
+      <p class="muted">Lesson flashcards, guided practice, and a scored Practice Test</p>
     </div>
     <label class="ocs-theme-picker" hidden>Theme
   <select id="ocs-theme">
@@ -200,17 +205,39 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
     <button type="button" class="button primary" data-mode="lessons" aria-pressed="true">Lesson flashcards</button>
     <button type="button" class="button" data-mode="word" aria-pressed="false">Multiple-choice guide · 50</button>
     <button type="button" class="button" data-mode="comprehensive" aria-pressed="false">Comprehensive guide · 50</button>
+    <button type="button" class="button" data-mode="test" aria-pressed="false">Practice Test</button>
   </div>
   <label class="chapter-picker" id="scope-label">Lesson
     <select id="scope"><option value="all">All 8 lessons</option></select>
   </label>
+  <div class="test-controls" id="test-controls" hidden>
+    <label class="chapter-picker">Test bank
+      <select id="test-bank">
+        <option value="word">Multiple-choice guide</option>
+        <option value="comprehensive">Comprehensive guide</option>
+        <option value="flashcards">Lesson flashcards only</option>
+        <option value="guides">Both guides</option>
+        <option value="all">All questions (flashcards + both guides)</option>
+      </select>
+    </label>
+    <label class="chapter-picker">Test length
+      <select id="test-length">
+        <option value="50">50 questions</option>
+        <option value="32">32 questions</option>
+        <option value="25" selected>25 questions</option>
+        <option value="20">20 questions</option>
+        <option value="10">10 questions</option>
+      </select>
+    </label>
+  </div>
   <div class="order-controls">
     <label class="shuffle-toggle"><input type="checkbox" id="shuffle" autocomplete="off"> Shuffle items</label>
     <button type="button" class="button" id="restart">Restart set</button>
   </div>
-  <p class="muted">Changing the mode, lesson, or shuffle setting starts a fresh round. Restart clears this round’s answers.</p>
+  <p class="muted" id="round-help">Changing round settings or restarting clears this round’s answers.</p>
+  <p id="test-instructions" class="muted" hidden>Choose an answer and move on. You can change your choices before submitting. The score and answers appear after submission.</p>
   <p id="score" role="status" hidden></p>
-  <section class="card" aria-labelledby="prompt">
+  <section class="card" id="question-card" aria-labelledby="prompt">
     <div id="position" class="eyebrow"></div>
     <h2 id="prompt" tabindex="-1"></h2>
     <fieldset id="options" class="quiz-options" aria-label="Answer choices" hidden></fieldset>
@@ -222,10 +249,19 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
       <p id="source"></p>
     </div>
   </section>
-  <div class="controls">
+  <div class="controls" id="question-controls">
     <button type="button" class="button" id="previous">Previous</button>
     <button type="button" class="button" id="next">Next</button>
+    <button type="button" class="button primary" id="submit-test" hidden>Submit test</button>
   </div>
+  <p id="test-notice" role="status" class="muted"></p>
+  <section class="card" id="test-summary" aria-labelledby="summary-title" hidden>
+    <h2 id="summary-title" tabindex="-1">Practice Test Results</h2>
+    <p id="summary-score"></p>
+    <p class="muted">This is a practice score. It does not indicate an official passing standard.</p>
+    <label class="shuffle-toggle"><input type="checkbox" id="missed-only"> Show missed questions only</label>
+    <div id="summary-items"></div>
+  </section>
   <p class="muted">Source note: the Word guide asks for nine traditional Principles of War; Lesson 1 also lists three later additions. Read each prompt for the scope it asks about.</p>
 </div>
 </main>
@@ -238,28 +274,94 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
   const data = JSON.parse(get('study-data').textContent);
   const scope = get('scope'), options = get('options'), action = get('action');
   const tabs = [...document.querySelectorAll('[data-mode]')];
-  let active = 'lessons', items = [], i = 0, answers = new Map(), revealed = false;
+  let active = 'lessons', items = [], i = 0, answers = new Map(), revealed = false, submitted = false;
   get('hub-nav').hidden = !/^https?:$/.test(location.protocol);
   for (const lesson of data.lessons) {
     const opt = document.createElement('option');
     opt.value = lesson.id; opt.textContent = lesson.name.replace(/^AMH /, '');
     scope.append(opt);
   }
-  function start(focus = false) {
-    items = active !== 'lessons' ? [...data[active]] :
-      data.lessons.filter(l => scope.value === 'all' || l.id === scope.value).flatMap(l => l.cards);
-    if (get('shuffle').checked) {
-      for (let k = items.length - 1; k > 0; k--) {
-        const j = Math.floor(Math.random() * (k + 1));
-        [items[k], items[j]] = [items[j], items[k]];
-      }
+  function shuffle(list) {
+    for (let k = list.length - 1; k > 0; k--) {
+      const j = Math.floor(Math.random() * (k + 1));
+      [list[k], list[j]] = [list[j], list[k]];
     }
-    i = 0; answers = new Map(); revealed = false;
+    return list;
+  }
+
+  // Take one question at a time from each source so a short test uses every selected source.
+  function mix(sources, limit) {
+    const result = [];
+    for (let row = 0; result.length < limit; row++) {
+      let added = false;
+      for (const source of sources) {
+        if (row >= source.length) continue;
+        result.push(source[row]);
+        added = true;
+        if (result.length === limit) break;
+      }
+      if (!added) break;
+    }
+    return result;
+  }
+
+  // Flashcards keep their original answers. Pick different answers from the same lesson
+  // as distractors, favoring similar length so the correct answer is less obvious.
+  const flashcardBanks = data.lessons.map(lesson => lesson.cards.map((card, index) => {
+    const normalize = answer => answer.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const key = normalize(card.answer);
+    const used = new Set([key]);
+    const otherAnswers = [...lesson.cards, ...data.lessons.filter(l => l !== lesson).flatMap(l => l.cards)]
+      .map(other => ({ answer: other.answer, local: lesson.cards.includes(other) }))
+      .sort((a, b) => Number(b.local) - Number(a.local) ||
+        Math.abs(a.answer.length - card.answer.length) - Math.abs(b.answer.length - card.answer.length));
+    const choices = [];
+    for (const other of otherAnswers) {
+      const candidate = normalize(other.answer);
+      if (used.has(candidate) || candidate.includes(key) || key.includes(candidate)) continue;
+      used.add(candidate);
+      choices.push(other.answer);
+      if (choices.length === 3) break;
+    }
+    const correct = (index + Number(lesson.id) - 1) % 4;
+    choices.splice(correct, 0, card.answer);
+    return { ...card, options: choices, correct };
+  }));
+
+  function start(focus = false) {
+    const shuffled = get('shuffle').checked;
+    const ordered = source => shuffled ? shuffle([...source]) : [...source];
+    if (active === 'test') {
+      const bank = get('test-bank').value;
+      const length = Number(get('test-length').value);
+      const flashcards = () => mix(flashcardBanks.map(ordered), Infinity);
+      const guides = () => [ordered(data.word), ordered(data.comprehensive)];
+      if (bank === 'all') items = mix([...guides(), flashcards()], length);
+      else if (bank === 'guides') items = mix(guides(), length);
+      else if (bank === 'flashcards') items = flashcards().slice(0, length);
+      else items = ordered(data[bank]).slice(0, length);
+      if (shuffled) shuffle(items);
+    } else {
+      const source = active === 'lessons' ?
+        data.lessons.filter(l => scope.value === 'all' || l.id === scope.value).flatMap(l => l.cards) : data[active];
+      items = ordered(source);
+    }
+    i = 0; answers = new Map(); revealed = false; submitted = false;
+    get('test-summary').hidden = true;
+    get('question-card').hidden = false;
+    get('question-controls').hidden = false;
+    get('missed-only').checked = false;
+    get('summary-items').replaceChildren();
+    get('summary-score').textContent = '';
+    get('test-notice').textContent = '';
     render(focus);
   }
   function render(focus = false) {
     const q = items[i], quiz = active !== 'lessons', answered = answers.has(q.id);
-    const selected = answers.get(q.id);
+    const selected = answers.get(q.id), test = active === 'test';
+    get('test-controls').hidden = !test;
+    get('test-instructions').hidden = !test;
+    get('submit-test').hidden = !test;
     get('scope-label').hidden = quiz;
     get('position').textContent = (i + 1) + ' of ' + items.length + ' · ' + q.id.toUpperCase();
     get('prompt').textContent = q.prompt;
@@ -269,35 +371,92 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
     score.hidden = !quiz;
     if (quiz) {
       const correct = items.filter(x => answers.get(x.id) === x.correct).length;
-      score.textContent = correct + ' correct · ' + answers.size + ' of ' + items.length + ' answered';
+      if (test) updateTestProgress();
+      else score.textContent = correct + ' correct · ' + answers.size + ' of ' + items.length + ' answered';
       q.options.forEach((choice, n) => {
         const label = document.createElement('label');
         const radio = document.createElement('input');
         radio.type = 'radio'; radio.name = 'choice'; radio.value = n;
-        radio.disabled = answered; radio.checked = selected === n;
-        radio.addEventListener('change', () => { action.disabled = false; });
+        radio.disabled = !test && answered; radio.checked = selected === n;
+        radio.addEventListener('change', () => {
+          if (test) {
+            answers.set(q.id, n);
+            updateTestProgress();
+            get('test-notice').textContent = '';
+          } else action.disabled = false;
+        });
         label.append(radio, document.createTextNode(String.fromCharCode(65 + n) + '. ' + choice));
         options.append(label);
       });
     }
-    action.hidden = quiz && answered;
+    action.hidden = test || (quiz && answered);
     action.disabled = quiz;
     action.textContent = quiz ? 'Check answer' : (revealed ? 'Hide answer' : 'Reveal answer');
     if (quiz) action.removeAttribute('aria-expanded');
     else action.setAttribute('aria-expanded', String(revealed));
-    get('answer').hidden = quiz ? !answered : !revealed;
-    get('result').textContent = quiz && answered ? (selected === q.correct ? 'Correct' : 'Incorrect') : '';
-    get('answer-text').textContent = quiz ? 'Correct answer: ' + String.fromCharCode(65 + q.correct) + '. ' + q.options[q.correct] : q.answer;
-    get('explanation').textContent = q.explanation || '';
-    get('source').textContent = 'Source: ' + q.source;
+    get('answer').hidden = test || (quiz ? !answered : !revealed);
+    get('result').textContent = !test && quiz && answered ? (selected === q.correct ? 'Correct' : 'Incorrect') : '';
+    get('answer-text').textContent = test ? '' : quiz ? 'Correct answer: ' + optionText(q, q.correct) : q.answer;
+    get('explanation').textContent = test ? '' : q.explanation || '';
+    get('source').textContent = test ? '' : 'Source: ' + q.source;
     get('previous').disabled = i === 0;
     get('next').disabled = i + 1 >= items.length;
     if (focus) get('prompt').focus();
   }
+  function updateTestProgress() {
+    get('score').textContent = answers.size + ' of ' + items.length + ' answered';
+  }
+  function optionText(q, n) {
+    return String.fromCharCode(65 + n) + '. ' + q.options[n];
+  }
+  function showResults() {
+    if (!submitted) return;
+    const container = get('summary-items');
+    const missedOnly = get('missed-only').checked;
+    container.replaceChildren();
+    for (const [n, q] of items.entries()) {
+      const selected = answers.get(q.id), correct = selected === q.correct;
+      if (missedOnly && correct) continue;
+      const detail = document.createElement('details');
+      detail.className = 'test-result';
+      const title = document.createElement('summary');
+      title.textContent = (n + 1) + '. ' + (correct ? 'Correct' : 'Missed') + ' — ' + q.prompt;
+      detail.append(title);
+      for (const line of ['Your answer: ' + optionText(q, selected),
+        'Correct answer: ' + optionText(q, q.correct), q.explanation, 'Source: ' + q.source]) {
+        if (!line) continue;
+        const p = document.createElement('p');
+        p.textContent = line;
+        detail.append(p);
+      }
+      container.append(detail);
+    }
+    if (!container.children.length) container.textContent = 'No missed questions.';
+  }
+  get('submit-test').addEventListener('click', () => {
+    if (active !== 'test' || submitted) return;
+    const unanswered = items.length - answers.size;
+    if (unanswered) {
+      i = items.findIndex(q => !answers.has(q.id));
+      render(true);
+      get('test-notice').textContent = 'Answer ' + unanswered + (unanswered === 1 ? ' remaining question' : ' remaining questions') + ' before submitting.';
+      return;
+    }
+    submitted = true;
+    const correct = items.filter(q => answers.get(q.id) === q.correct).length;
+    get('summary-score').textContent = correct + ' of ' + items.length + ' correct (' + Math.round(100 * correct / items.length) + '%)';
+    get('question-card').hidden = true;
+    get('question-controls').hidden = true;
+    get('test-notice').textContent = '';
+    get('test-summary').hidden = false;
+    showResults();
+    get('summary-title').focus();
+  });
+  get('missed-only').addEventListener('change', showResults);
   action.addEventListener('click', () => {
     const q = items[i];
     if (active === 'lessons') { revealed = !revealed; render(); return; }
-    if (answers.has(q.id)) return;
+    if (active === 'test' || answers.has(q.id)) return;
     const choice = options.querySelector('input:checked');
     if (!choice) return;
     answers.set(q.id, Number(choice.value));
@@ -306,7 +465,7 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
   });
   for (const [id, delta] of [['previous', -1], ['next', 1]]) {
     get(id).addEventListener('click', () => {
-      if (i + delta >= 0 && i + delta < items.length) { i += delta; revealed = false; render(true); }
+      if (!submitted && i + delta >= 0 && i + delta < items.length) { i += delta; revealed = false; render(true); }
     });
   }
   for (const tab of tabs) tab.addEventListener('click', () => {
@@ -319,6 +478,8 @@ fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
     start(true);
   });
   scope.addEventListener('change', () => start());
+  get('test-bank').addEventListener('change', () => start());
+  get('test-length').addEventListener('change', () => start());
   get('shuffle').addEventListener('change', () => start());
   get('restart').addEventListener('click', () => start(true));
   get('tool').hidden = false;
